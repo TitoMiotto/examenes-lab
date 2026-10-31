@@ -36,3 +36,4 @@
 .canvas-scroller{scrollbar-gutter:stable;touch-action:none}
 .main-stage{position:relative}
 .stage-foot{position:absolute;bottom:0;left:0;right:0;background:#ffffffde;pointer-events:none;z-index:3}
+.grade-fields{display:flex;flex-direction:column;gap:10px}.field-error{font-size:11px;color:#a23b43;line-height:1.5}.grade-pending{padding:10px;border:1px solid #ecc5c7;border-radius:8px;background:#fff6f6;font-size:11px;color:#933941}.grade-pending p{margin:6px 0}.grade-pending button{display:block;text-decoration:underline;padding:4px 0}

@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, model_validator
 from PIL import Image
 
 from .db import DATA_DIR, connect, init_db
+from .grading import grade_problem
 from .services import batch_dir, export_zip, oriented_image, png_bytes, redact, render_pdf, rotate_rectangle
 
 MAX_UPLOAD = 100 * 1024 * 1024
@@ -50,6 +51,8 @@ class RegionInput(BaseModel):
     reading_order: int | None = Field(default=None, ge=1)
     scope: Literal['examen','pregunta','inciso'] | None = None
     value_text: str | None = Field(default=None, max_length=150)
+    score_value: float | None = Field(default=None, ge=0, allow_inf_nan=False)
+    score_denominator: float | None = Field(default=None, gt=0, allow_inf_nan=False)
     note_text: str | None = Field(default=None, max_length=2000)
 
     @model_validator(mode='after')
@@ -64,12 +67,19 @@ class RegionInput(BaseModel):
             if self.kind == 'subpregunta' and not self.subquestion_id:
                 raise ValueError('Subpregunta requiere identificador de inciso')
         if self.kind == 'calificacion':
-            if not self.scope:
-                raise ValueError('La calificación requiere alcance')
+            if self.scope not in ('pregunta', 'inciso'):
+                raise ValueError('La calificación debe corresponder a una pregunta o un inciso')
             if self.scope in ('pregunta','inciso') and not self.question_id:
                 raise ValueError('El alcance requiere pregunta')
             if self.scope == 'inciso' and not self.subquestion_id:
                 raise ValueError('El alcance inciso requiere inciso')
+            if self.score_value is not None and self.score_denominator is not None and self.score_value > self.score_denominator:
+                raise ValueError('El valor no puede superar el denominador')
+            if self.scope == 'pregunta':
+                self.subquestion_id = None
+            # The structured fields are authoritative after an edit.
+            if self.score_value is not None and self.score_denominator is not None:
+                self.value_text = f"{str(self.score_value).removesuffix('.0')} / {str(self.score_denominator).removesuffix('.0')}"
         return self
 
 class ExportInput(BaseModel):
@@ -208,10 +218,24 @@ def new_region(batch_id:str,page_index:int, data:RegionInput):
         page=checked_page(c,batch_id,page_index)
         if data.x2>page['width'] or data.y2>page['height']:
             raise HTTPException(422,'Región fuera de la página')
+        if data.kind == 'calificacion' and data.score_denominator is None:
+            details = serialized_batch(c, batch_id)
+            current = next(p for p in details['pages'] if p['id'] == page['id'])
+            previous = [r for p in details['pages'] if p['page_index'] < page_index and p['exam_id'] != current['exam_id']
+                        for r in p['regions'] if r['kind'] == 'calificacion' and r['question_id'] == data.question_id
+                        and r['scope'] == data.scope and (data.scope != 'inciso' or r['subquestion_id'] == data.subquestion_id)
+                        and r['score_denominator'] is not None]
+            if previous:
+                data.score_denominator = previous[-1]['score_denominator']
+                if data.score_value is not None and data.score_value > data.score_denominator:
+                    raise HTTPException(422, 'El valor no puede superar el denominador')
+                data = RegionInput.model_validate(data.model_dump())
         r_id=uid()
-        c.execute('INSERT INTO regions VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',(
+        c.execute('''INSERT INTO regions
+            (id,page_id,kind,x1,y1,x2,y2,question_id,subquestion_id,reading_order,scope,value_text,note_text,updated_at,score_value,score_denominator)
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',(
             r_id,page['id'],data.kind,data.x1,data.y1,data.x2,data.y2,
-            data.question_id,data.subquestion_id,data.reading_order,data.scope,data.value_text,data.note_text,now()))
+            data.question_id,data.subquestion_id,data.reading_order,data.scope,data.value_text,data.note_text,now(),data.score_value,data.score_denominator))
         return {'id':r_id}
 
 @app.put('/api/batches/{batch_id}/regions/{region_id}')
@@ -223,8 +247,8 @@ def update_region(batch_id:str,region_id:str,data:RegionInput):
             raise HTTPException(404,'Región inexistente')
         if data.x2>row['width'] or data.y2>row['height']:
             raise HTTPException(422,'Región fuera de la página')
-        c.execute('''UPDATE regions SET kind=?,x1=?,y1=?,x2=?,y2=?,question_id=?,subquestion_id=?,reading_order=?,scope=?,value_text=?,note_text=?,updated_at=? WHERE id=?''',
-            (data.kind,data.x1,data.y1,data.x2,data.y2,data.question_id,data.subquestion_id,data.reading_order,data.scope,data.value_text,data.note_text,now(),region_id))
+        c.execute('''UPDATE regions SET kind=?,x1=?,y1=?,x2=?,y2=?,question_id=?,subquestion_id=?,reading_order=?,scope=?,value_text=?,note_text=?,updated_at=?,score_value=?,score_denominator=? WHERE id=?''',
+            (data.kind,data.x1,data.y1,data.x2,data.y2,data.question_id,data.subquestion_id,data.reading_order,data.scope,data.value_text,data.note_text,now(),data.score_value,data.score_denominator,region_id))
         return {'ok':True}
 
 @app.delete('/api/batches/{batch_id}/regions/{region_id}')
@@ -247,6 +271,9 @@ def create_export(batch_id:str,payload:ExportInput):
         regions=[dict(r) for r in c.execute('SELECT r.* FROM regions r JOIN pages p ON p.id=r.page_id WHERE p.batch_id=?',(batch_id,))]
         if not any(r['kind']!='privacidad' for r in regions):
             raise HTTPException(422,'Primero etiquetá al menos una región académica')
+        incomplete = [r for r in regions if grade_problem(r)]
+        if incomplete:
+            raise HTTPException(422, f'Hay {len(incomplete)} calificaciones pendientes: asigná pregunta/inciso y completá valor y denominador antes de exportar')
         outdir=DATA_DIR/'exports'
         outfile=outdir/f'{export_id}.zip'
         try:

@@ -52,3 +52,15 @@ def connect():
 def init_db():
     with connect() as c:
         c.executescript(SCHEMA)
+        # Additive and repeatable migration: keep all original regions and legacy text.
+        columns = {row['name'] for row in c.execute('PRAGMA table_info(regions)')}
+        migrate_legacy = any(name not in columns for name in ('score_value', 'score_denominator'))
+        for name in ('score_value', 'score_denominator'):
+            if name not in columns:
+                c.execute(f'ALTER TABLE regions ADD COLUMN {name} REAL')
+        if migrate_legacy:
+            from .grading import legacy_score
+            for row in c.execute("SELECT id,value_text FROM regions WHERE kind='calificacion' AND score_value IS NULL AND score_denominator IS NULL"):
+                parsed = legacy_score(row['value_text'])
+                if parsed:
+                    c.execute('UPDATE regions SET score_value=?,score_denominator=? WHERE id=?', (*parsed, row['id']))

@@ -38,7 +38,7 @@ function Rectangle({region,selected,editable,page,choose,update}:{region:Region;
    onMouseEnter={e=>{e.target.getStage()!.container().style.cursor='move'}}
    onMouseLeave={e=>{e.target.getStage()!.container().style.cursor='default'}}/>
   <KText ref={label} x={region.x1+4} y={region.y1+3}
-   text={region.kind==='privacidad'?'PRIV':`${region.question_id||LABELS[region.kind].title}${region.kind==='subpregunta'?'.'+region.subquestion_id:''}${region.reading_order?' · '+region.reading_order:''}`}
+   text={region.kind==='privacidad'?'PRIV':`${region.question_id||LABELS[region.kind].title}${region.kind==='subpregunta'||region.kind==='calificacion'&&region.scope==='inciso'?'.'+region.subquestion_id:''}${region.reading_order?' · '+region.reading_order:''}`}
    fontSize={16} fontStyle="bold" fill={color} listening={false}/>
  </>;
 }

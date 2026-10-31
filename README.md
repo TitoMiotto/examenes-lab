@@ -62,7 +62,19 @@ Ingresá a **http://127.0.0.1:5173**. El backend tiene documentación en http://
 
 La imagen ocupa el ancho disponible del visor y permite desplazamiento vertical. No hay encabezado sobre la imagen: la navegación, el zoom y las herramientas están en el panel derecho. El botón de documento activo permite ocultar o mostrar la columna izquierda. La previsualización anonimizada se muestra en el visor central, en modo de solo lectura. Si falla un autoguardado, se conserva el cambio local y aparece **Reintentar guardado**; la exportación permanece deshabilitada hasta guardarlo.
 
-El manifiesto de exportación usa `schema_version: 2` y `orden_lectura_por: "campo"`. Incluye `preguntas`: grupos por `examen_id`, `pregunta_id`, `tipo` e `inciso_id`, con los identificadores de regiones ordenados por su secuencia de fragmentos. Las respuestas usan `tipo: "respuesta"` e `inciso_id: null`; las subpreguntas usan `tipo: "subpregunta"` y su inciso. Los consumidores del manifiesto deben usar esos cuatro campos para separar las secuencias. Se conserva también la lista completa `regiones`.
+El manifiesto de exportación usa `schema_version: 3` y `orden_lectura_por: "campo"`. Incluye `preguntas`: grupos por `examen_id`, `pregunta_id`, `tipo` e `inciso_id`, con los identificadores de regiones ordenados por su secuencia de fragmentos. Las respuestas usan `tipo: "respuesta"` e `inciso_id: null`; las subpreguntas usan `tipo: "subpregunta"` y su inciso. Los consumidores del manifiesto deben usar esos cuatro campos para separar las secuencias. Se conserva también la lista completa `regiones`.
+
+## Calificaciones docentes
+
+Las calificaciones corresponden a una **pregunta** o un **inciso**; no hay nota total del examen. Al dibujar calificaciones consecutivas se proponen las siguientes preguntas (`P1`, `P2`…) o incisos (`a`, `b`…). Los contadores de notas son independientes de los fragmentos de respuestas.
+
+Cada nota requiere **valor obtenido** y **denominador**, en campos separados. Se aceptan decimales con coma o punto y notas de cero; el denominador debe ser positivo y el valor no puede superarlo. Al crear una región se enfoca automáticamente el valor. En los siguientes exámenes del mismo lote, se propone el denominador ya usado para esa pregunta/inciso; la nota obtenida siempre comienza vacía. Podés modificar el denominador propuesto.
+
+Se autoguardan también los borradores de notas incompletas. **Exportar** muestra cuáles faltan completar y permite abrir cada una. La API también impide generar paquetes con calificaciones incompletas o con alcance de examen.
+
+La base existente se actualiza sin borrar anotaciones. Las fracciones antiguas inequívocas, como `7,5 / 10`, se convierten a números; se conserva el texto original. Las notas antiguas de examen deben asignarse manualmente a una pregunta/inciso. No se inventan denominadores para textos ambiguos.
+
+En el manifiesto v3 cada calificación incluye `valor` y `denominador` numéricos, además de `valor_manual` para lectura humana. Cada campo en `preguntas` incluye `calificaciones`, con las regiones docentes de ese mismo examen y pregunta/inciso; esos IDs se mantienen separados del orden de fragmentos de estudiantes. No se ejecuta OCR.
 
 ## Almacenamiento
 
@@ -100,13 +112,14 @@ python -m pytest tests -q
 Pruebas de las reglas del editor (Node.js 24, sin dependencias adicionales):
 
 ```bash
-node --test frontend/tests/annotations.test.mjs
+node --test frontend/tests/*.test.mjs
 ```
 
 Prueba de interacción en navegador (requiere las dependencias anteriores, Python con `playwright` instalado y Chromium en el sistema o `CHROMIUM_PATH`):
 
 ```bash
 python frontend/tests/editor_browser.py
+python frontend/tests/grading_browser.py
 ```
 
 Este test inicia sus propios servidores en puertos libres y utiliza datos temporales. Comprueba selección de regiones cercanas, arrastre, los ocho tiradores, controles superpuestos, límites de página, zoom y scroll, herramientas persistentes y secuencias por inciso.

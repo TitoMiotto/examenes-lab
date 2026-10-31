@@ -7,6 +7,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageOps
 import fitz
 from .db import DATA_DIR
+from .grading import grade_problem
 
 Image.MAX_IMAGE_PIXELS = 150_000_000
 
@@ -67,6 +68,8 @@ def png_bytes(img: Image.Image) -> bytes:
 
 
 def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: str, mode: str, output: Path):
+    if any(grade_problem(r) for r in regions):
+        raise ValueError('Hay calificaciones incompletas o sin pregunta/inciso')
     by_page = {}
     for r in regions:
         by_page.setdefault(r['page_id'], []).append(r)
@@ -104,6 +107,8 @@ def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: s
                         'orden':r['reading_order'], 'alcance':r['scope'],
                         'valor_manual':r['value_text'], 'observacion_manual':r['note_text']
                     })
+                    if r['kind'] == 'calificacion':
+                        meta.update({'valor': r['score_value'], 'denominador': r['score_denominator']})
                     folder = 'estudiantes' if r['kind'] in ('respuesta','subpregunta') else 'docentes'
                     filename = f'recortes/{folder}/{r["id"]}.png'
                     crop = clean.crop((r['x1'],r['y1'],r['x2'],r['y2']))
@@ -121,12 +126,17 @@ def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: s
             questions.setdefault(key, []).append(item)
         question_sequences = [
             {'examen_id': exam, 'pregunta_id': question, 'tipo': kind, 'inciso_id': subquestion,
+             'calificaciones': [item['region_id'] for item in items
+                                if item['tipo'] == 'calificacion' and item['examen_id'] == exam
+                                and item['pregunta_id'] == question
+                                and ((kind == 'respuesta' and item['alcance'] == 'pregunta')
+                                     or (kind == 'subpregunta' and item['alcance'] == 'inciso' and item['inciso_id'] == subquestion))],
              'regiones': [item['region_id'] for item in sorted(
                  members, key=lambda item: (item['orden'], item['pagina_original'], item['region_id']))]}
             for (exam, question, kind, subquestion), members in questions.items()
         ]
         manifest = {
-            'schema_version':2,
+            'schema_version':3,
             'exportacion_id':export_id,
             'lote_id_anonimo':batch['id'],
             'modo':mode,

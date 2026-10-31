@@ -167,7 +167,7 @@ def check(page, api, base, batch_id, ids):
     print('PASS: nearby selection, parent handle over child, unselected center drag, all 8 handles, page-edge handles, zoom + scroll, persistent tools, subquestion order')
 
 
-def main():
+def main(check_fn=check):
     with tempfile.TemporaryDirectory(prefix='examenes-editor-regression-') as temp:
         backend_port, frontend_port = port(), port()
         backend_url=f'http://127.0.0.1:{backend_port}'
@@ -180,7 +180,7 @@ def main():
             frontend=subprocess.Popen(['node',str(ROOT/'frontend/node_modules/vite/bin/vite.js'),'--host','127.0.0.1','--port',str(frontend_port),'--strictPort'],cwd=ROOT/'frontend',stdout=log,stderr=log)
             processes.append(frontend);ready(frontend_url,frontend)
             pdf=Path(temp)/'synthetic.pdf'
-            subprocess.run([str(PYTHON),'-c',"import fitz,sys;d=fitz.open();d.new_page(width=600,height=1000);d.save(sys.argv[1])",str(pdf)],check=True)
+            subprocess.run([str(PYTHON),'-c',"import fitz,sys;d=fitz.open();[d.new_page(width=600,height=1000) for _ in range(3)];d.save(sys.argv[1])",str(pdf)],check=True)
             with sync_playwright() as pw:
                 browser=pw.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH') or shutil.which('chromium'),args=['--no-sandbox'])
                 api=pw.request.new_context(base_url=backend_url)
@@ -203,7 +203,7 @@ def main():
                     ids[key]=response.json()['id']
                 page=browser.new_page(viewport={'width':1440,'height':850})
                 page.route('**/api/**',lambda route: route.fulfill(response=route.fetch(url=route.request.url.replace(frontend_url,backend_url))))
-                check(page,api,frontend_url,batch_id,ids)
+                check_fn(page,api,frontend_url,batch_id,ids)
                 browser.close()
         except Exception:
             log.flush();print(Path(log.name).read_text()[-4000:]);raise

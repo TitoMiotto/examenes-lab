@@ -5,6 +5,7 @@ export type Region = {
   x1:number;y1:number;x2:number;y2:number;
   question_id:string|null; subquestion_id:string|null;
   reading_order:number|null; scope:Scope|null;
+  score_value:number|null; score_denominator:number|null;
   value_text:string|null; note_text:string|null; updated_at:string;
 }
 export type Page = {
