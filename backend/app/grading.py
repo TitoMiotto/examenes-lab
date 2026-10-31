@@ -27,3 +27,14 @@ def grade_problem(region):
     if not math.isfinite(value) or not math.isfinite(denominator) or value < 0 or denominator <= 0 or value > denominator:
         return 'La calificación debe cumplir 0 ≤ valor ≤ denominador, con denominador mayor que cero'
     return None
+
+
+def covering_grades(regions, response):
+    """Caller supplies one exam's regions. A question score may cover its incisos."""
+    valid = [r for r in regions if r['kind'] == 'calificacion' and not grade_problem(r)
+             and r['question_id'] == response['question_id']]
+    question = [r for r in valid if r['scope'] == 'pregunta']
+    if response['kind'] == 'respuesta':
+        return question
+    inciso = [r for r in valid if r['scope'] == 'inciso' and r['subquestion_id'] == response['subquestion_id']]
+    return inciso or question

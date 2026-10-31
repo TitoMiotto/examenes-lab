@@ -1,7 +1,7 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {Archive,ArrowLeft,CheckCircle2,ChevronLeft,ChevronRight,Download,Eye,EyeOff,FileDown,FilePlus2,FileText,Layers3,LoaderCircle,MousePointer2,RotateCcw,RotateCw,PanelLeftClose,PanelLeftOpen,Scissors,ShieldCheck,Trash2,UploadCloud, X, Info, ZoomIn, ZoomOut} from 'lucide-react';
-import {api,type Batch,type BatchSummary,type Kind,type Region,type RegionPayload,type Scope} from './api';
-import {gradeProblem, nextGradeTarget, previousDenominator, type GradeScope} from './grading';
+import {api,type Batch,type BatchSummary,type Kind,type Region,type RegionPayload,type Scope,type ValidationReport,type ValidationIssue} from './api';
+import {gradeProblem, nextGradeTarget, previousDenominator, type GradeScope, coveringGrades} from './grading';
 import EditorCanvas,{LABELS} from './EditorCanvas';
 import {academic, containingAnswer, identifiers, questionOrder, nextQuestion, nextSubquestion} from './annotations';
 
@@ -87,6 +87,9 @@ export default function App(){
  const [exportLink,setExportLink]=useState<string|null>(null);
  const [sidebar,setSidebar]=useState(true);
  const [gradeScope,setGradeScope]=useState<GradeScope>('pregunta');
+ const [gradeTarget,setGradeTarget]=useState<ValidationIssue['field']>(null);
+ const [validation,setValidation]=useState<ValidationReport|null>(null),[validationLoading,setValidationLoading]=useState(false),[validationError,setValidationError]=useState('');
+ const [acceptedFingerprint,setAcceptedFingerprint]=useState<string|null>(null);
  const [pending,setPending]=useState(0),[failed,setFailed]=useState<Record<string,RegionPayload>>({});
  const writes=useRef(Promise.resolve());
  const saving=pending>0;
@@ -96,6 +99,15 @@ export default function App(){
   window.addEventListener('beforeunload',warn);
   return()=>window.removeEventListener('beforeunload',warn);
  },[saving,failed]);
+ useEffect(()=>{
+  setValidation(null);setAcceptedFingerprint(null);setValidationError('');
+  if(!batch||tab!=='export'||saving){setValidationLoading(false);return}
+  let current=true;setValidationLoading(true);
+  api.validation(batch.id).then(report=>{if(current)setValidation(report)})
+   .catch(e=>{if(current)setValidationError(e instanceof Error?e.message:String(e))})
+   .finally(()=>{if(current)setValidationLoading(false)});
+  return()=>{current=false};
+ },[batch,tab,saving]);
  const revision=useRef(0);
  useEffect(()=>{api.list().then(setBatches).catch(e=>setError(e.message))},[]);
  const page=batch?.pages[pageIndex];
@@ -104,8 +116,8 @@ export default function App(){
  const pendingGrades=batch?.pages.flatMap(p=>p.regions.filter(r=>gradeProblem(r)).map(r=>({page:p.page_index,region:r})))||[];
  const privacyCount=batch?.pages.reduce((n,p)=>n+p.regions.filter(r=>r.kind==='privacidad').length,0)||0;
  const run=async (fn:()=>Promise<void>,success?:string)=>{setBusy(true);setError('');setMessage('');try{await fn();if(success)setMessage(success)}catch(e){setError(e instanceof Error?e.message:String(e))}finally{setBusy(false)}};
- const navigate=(idx:number)=>{if(busy||saving||Object.keys(failed).length)return;setPageIndex(idx);setSelectedId(null);setZoom(1)};
- const changeBatch=(b:Batch)=>{setBatch(b);setPageIndex(0);setTool('seleccion');setSelectedId(null);setReviewed(false);setReviewedPages(new Set());setPreview(false);setTab('editor');setExportLink(null);setFailed({})};
+ const navigate=(idx:number)=>{if(busy||saving||Object.keys(failed).length)return;setPageIndex(idx);setSelectedId(null);setGradeTarget(null);setZoom(1)};
+ const changeBatch=(b:Batch)=>{setBatch(b);setGradeTarget(null);setPageIndex(0);setTool('seleccion');setSelectedId(null);setReviewed(false);setReviewedPages(new Set());setPreview(false);setTab('editor');setExportLink(null);setFailed({})};
  const reload=async()=>{if(batch)setBatch(await api.get(batch.id))};
  const upload=async(file:File)=>{await run(async()=>{const result=await api.upload(file,dpi);changeBatch(await api.get(result.id));setBatches(await api.list())},'PDF importado. Podés separar exámenes y comenzar a marcar regiones.')};
  const toggleBoundary=async(idx:number)=>{if(!batch||idx===0||saving||Object.keys(failed).length)return;
@@ -146,19 +158,41 @@ export default function App(){
  const parent=tool==='subpregunta'?containingAnswer(page,box):undefined;
  const question=tool==='respuesta'?nextQuestion(batch,page):parent?.question_id||selected?.question_id||'P1';
  const inciso=tool==='subpregunta'?nextSubquestion(batch,page,question):null;
- const target=nextGradeTarget(batch,page,gradeScope,selected);
+ const target=gradeTarget?.exam_id===page.exam_id?{question:gradeTarget.question_id,inciso:gradeTarget.subquestion_id}:nextGradeTarget(batch,page,gradeScope,selected);
  const payload:RegionPayload={...box,kind:tool,question_id:tool==='calificacion'?target.question:academic(tool)?question:null,
  subquestion_id:tool==='calificacion'?target.inciso:inciso,reading_order:academic(tool)?questionOrder(batch,page,question,undefined,tool,inciso):null,
  scope:tool==='calificacion'?gradeScope:null,value_text:null,note_text:null,score_value:null,score_denominator:tool==='calificacion'?previousDenominator(batch,page,gradeScope,target.question,target.inciso):null};
- await run(async()=>{const result=await api.createRegion(batch.id,pageIndex,payload);revision.current++;setExportLink(null);await reload();setSelectedId(result.id);setReviewed(false);setReviewedPages(new Set())},'Región guardada automáticamente.')};
+ await run(async()=>{const result=await api.createRegion(batch.id,pageIndex,payload);revision.current++;setExportLink(null);await reload();setGradeTarget(null);setSelectedId(result.id);setReviewed(false);setReviewedPages(new Set())},'Región guardada automáticamente.')};
  const moveRegion=async(id:string,box:{x1:number;y1:number;x2:number;y2:number})=>{if(!batch||!page)return;
  const region=page.regions.find(r=>r.id===id);if(!region)return;
  const clamp=(v:number,max:number)=>Math.max(0,Math.min(v,max));
  const payload={...serialize(region),x1:clamp(box.x1,page.width-1),y1:clamp(box.y1,page.height-1),x2:clamp(box.x2,page.width),y2:clamp(box.y2,page.height)};
  if(payload.x2<=payload.x1||payload.y2<=payload.y1)return;
  await persistRegion(id,payload)};
- const exportData=async()=>{if(!batch||!reviewed||pendingGrades.length||saving||Object.keys(failed).length||reviewedPages.size!==batch.pages_count)return;
- await run(async()=>{const res=await api.export(batch.id,mode);setExportLink(res.download_url);setMessage(`Exportación generada: ${res.exams_count} exámenes, ${res.regions_count} regiones y ${res.file_count} imágenes.`)})};
+ const exportData=async()=>{if(!batch||!reviewed||pendingGrades.length||!validation||validation.errors.length||validation.warnings.length&&acceptedFingerprint!==validation.fingerprint||saving||Object.keys(failed).length||reviewedPages.size!==batch.pages_count)return;
+ await run(async()=>{const res=await api.export(batch.id,mode,acceptedFingerprint||undefined).catch(async e=>{
+  setValidation(null);setAcceptedFingerprint(null);setExportLink(null);setReviewed(false);setReviewedPages(new Set());
+  try{setBatch(await api.get(batch.id))}catch{/* Keep the original export error visible. */}
+  throw e;
+ });setExportLink(res.download_url);setMessage(`Exportación generada: ${res.exams_count} exámenes, ${res.regions_count} regiones y ${res.file_count} imágenes.`)})};
+ const markGrade=(field:NonNullable<ValidationIssue['field']>,index:number,regionId:string)=>{
+  if(!batch||busy||saving||Object.keys(failed).length)return;
+  const notes=batch.pages.filter(p=>p.exam_id===field.exam_id).flatMap(p=>p.regions.filter(r=>r.kind==='calificacion'&&r.question_id===field.question_id).map(r=>({page:p.page_index,region:r})));
+  const existing=notes.find(n=>n.region.scope===field.scope&&(field.scope!=='inciso'||n.region.subquestion_id===field.subquestion_id))
+   ||(field.scope==='inciso'?notes.find(n=>n.region.scope==='pregunta'):undefined);
+  if(existing){
+   navigate(existing.page);setSelectedId(existing.region.id);setTool('seleccion');setTab('editor');setPreview(false);
+   setMessage('Completá o revisá la calificación ya marcada.');return;
+  }
+  navigate(index);setSelectedId(regionId);setGradeScope(field.scope);setGradeTarget(field);setTool('calificacion');setTab('editor');setPreview(false);
+  setMessage(`Dibujá la calificación de ${field.question_id}${field.subquestion_id?'.'+field.subquestion_id:''} y completá su valor.`);
+ };
+ const showIssue=(issue:ValidationIssue)=>{
+  if(busy||saving||Object.keys(failed).length)return;
+  navigate(issue.page_index);setSelectedId(issue.region_ids[0]);setTool('seleccion');setTab('editor');setPreview(false);
+ };
+ const selectedScores=selected&&page&&academic(selected.kind)&&batch?coveringGrades(batch,page,selected):[];
+ const validationBlocked=!validation||validationLoading||!!validationError||validation.errors.length>0||validation.warnings.length>0&&acceptedFingerprint!==validation.fingerprint;
  const available=useMemo(()=>batches.slice(0,6),[batches]);
  return <div className="app">
   <header className="topbar">
@@ -201,7 +235,7 @@ export default function App(){
     <div className="sidebar-footer"><Info size={15}/><span>Usá las líneas divisorias para indicar dónde comienza cada examen.</span></div>
    </aside>
    <main className="main-stage">
-    <div className="canvas-host">{page&&<EditorCanvas key={page.id} page={page} url={api.image(batch.id,pageIndex,false,preview)+`&v=${page.rotation}&revision=${preview?revision.current:0}`} tool={tool} zoom={zoom} selected={selectedId} readOnly={preview||busy} preview={preview} select={id=>{setSelectedId(id);setTool('seleccion')}} create={createRegion} move={moveRegion}/>}</div>
+    <div className="canvas-host">{page&&<EditorCanvas key={page.id} page={page} url={api.image(batch.id,pageIndex,false,preview)+`&v=${page.rotation}&revision=${preview?revision.current:0}`} tool={tool} zoom={zoom} selected={selectedId} readOnly={preview||busy} preview={preview} select={id=>{setSelectedId(id);setGradeTarget(null);setTool('seleccion')}} create={createRegion} move={moveRegion}/>}</div>
     <div className="stage-foot"><span><Info size={14}/> {saving?'Guardando cambios…':Object.keys(failed).length?'Hay cambios sin guardar':preview?'Vista anonimizada · solo lectura':'Todos los cambios guardados'}</span><span>{page?.width} × {page?.height} px · {batch.dpi} DPI</span></div>
    </main>
    <aside className="rightbar">
@@ -212,12 +246,20 @@ export default function App(){
      <button className="icon-button" onClick={()=>setZoom(v=>Math.max(0.4,+(v-.2).toFixed(2)))} title="Alejar"><ZoomOut size={17}/></button><span className="zoom-label">{Math.round(zoom*100)}%</span><button className="icon-button" onClick={()=>setZoom(v=>Math.min(3,+(v+.2).toFixed(2)))} title="Acercar"><ZoomIn size={17}/></button>
     </div>
     <div className="tools-line" aria-label="Herramientas de anotación"><button aria-pressed={tool==='seleccion'} onClick={()=>setTool('seleccion')} className={`tool ${tool==='seleccion'?'active':''}`}><MousePointer2 size={15}/> Seleccionar</button><span className="tools-divider"/>
-     {KINDS.map(k=><button key={k} aria-pressed={tool===k} className={`tool ${tool===k?'active':''}`} style={{'--tag-color':LABELS[k].color} as React.CSSProperties} onClick={()=>{setTool(k);setPreview(false)}}><span className="color-dot"/>{LABELS[k].title}</button>)}
+     {KINDS.map(k=><button key={k} aria-pressed={tool===k} className={`tool ${tool===k?'active':''}`} style={{'--tag-color':LABELS[k].color} as React.CSSProperties} onClick={()=>{setTool(k);setGradeTarget(null);setPreview(false)}}><span className="color-dot"/>{LABELS[k].title}</button>)}
     </div>
      {tab==='editor'?<div className="right-body">
        {selected?<RegionProperties key={selected.id} questions={identifiers(['P1','P2','P3'],batch.pages.flatMap(p=>p.regions.map(r=>r.question_id)))} subquestions={identifiers(['a','b','c'],batch.pages.flatMap(p=>p.regions.filter(r=>r.question_id===selected.question_id).map(r=>r.subquestion_id)))} r={selected} onSave={saveRegion} onDelete={deleteRegion} busy={busy}/>:<div className="panel-placeholder"><div className="panel-icon"><MousePointer2 size={20}/></div><h3>Seleccioná una región</h3><p>Usá las herramientas para dibujar un rectángulo. Luego podrás asignarle pregunta, inciso, orden o calificación.</p></div>}
+       {selected&&page&&academic(selected.kind)&&<div className="response-score">
+        <strong>Calificación obligatoria</strong>
+        {selectedScores.length?<p>{selectedScores[0].score_value} / {selectedScores[0].score_denominator}{selected.kind==='subpregunta'&&selectedScores[0].scope==='pregunta'?' · Nota de la pregunta':''}</p>:<>
+         <p>Esta respuesta todavía no tiene nota. Los fragmentos del mismo campo comparten la calificación.</p>
+         <button className="secondary w-full" disabled={busy||saving} onClick={()=>markGrade({exam_id:page.exam_id,question_id:selected.question_id||'P1',scope:selected.kind==='respuesta'?'pregunta':'inciso',subquestion_id:selected.kind==='subpregunta'?selected.subquestion_id:null},pageIndex,selected.id)}>Marcar calificación</button>
+        </>}
+       </div>}
+       <button className="secondary w-full mt-3" onClick={()=>setTab('export')}>Revisar lote</button>
        <div className="border-t border-slate-200 pt-5 mt-6"><div className="flex justify-between items-center mb-3"><h3 className="panel-heading">Regiones de la página</h3><span className="id-chip">{page?.regions.length||0}</span></div>
-        {page?.regions.length? [...page.regions].sort(order).map(r=><button key={r.id} onClick={()=>{setSelectedId(r.id);setTool('seleccion')}} className={`region-row ${selectedId===r.id?'chosen':''}`}><span className="region-color" style={{background:LABELS[r.kind].color}}/><div><strong>{LABELS[r.kind].title}</strong><small>{r.question_id||'Sin pregunta'}{r.subquestion_id?'.'+r.subquestion_id:''}{r.reading_order?` · Orden ${r.reading_order}`:''}{r.kind==='calificacion'?` · ${r.score_value??'…'} / ${r.score_denominator??'…'}`:''}</small></div><ChevronRight size={15}/></button>):<p className="muted text-sm">No se registraron regiones en esta página.</p>}
+        {page?.regions.length? [...page.regions].sort(order).map(r=><button key={r.id} onClick={()=>{setSelectedId(r.id);setGradeTarget(null);setTool('seleccion')}} className={`region-row ${selectedId===r.id?'chosen':''}`}><span className="region-color" style={{background:LABELS[r.kind].color}}/><div><strong>{LABELS[r.kind].title}</strong><small>{r.question_id||'Sin pregunta'}{r.subquestion_id?'.'+r.subquestion_id:''}{r.reading_order?` · Orden ${r.reading_order}`:''}{r.kind==='calificacion'?` · ${r.score_value??'…'} / ${r.score_denominator??'…'}`:''}</small></div><ChevronRight size={15}/></button>):<p className="muted text-sm">No se registraron regiones en esta página.</p>}
        </div>
      </div>:<div className="right-body space-y-5">
        <div><div className="section-label">PASO FINAL</div><h3 className="panel-heading mt-2">Preparar paquete para OCR</h3><p className="text-sm muted mt-2">Todas las máscaras de privacidad se aplican antes de generar los recortes.</p></div>
@@ -225,9 +267,24 @@ export default function App(){
        <button className="secondary w-full" onClick={()=>setPreview(v=>!v)}>{preview?<EyeOff size={16}/>:<Eye size={16}/>} {preview?'Ocultar previsualización':'Previsualizar privacidad'}</button>
        <div className="per-page-review"><div className="flex items-center justify-between"><strong>Revisión por página</strong><span>{reviewedPages.size} / {batch.pages_count}</span></div><p>Seleccioná cada página, previsualizá sus máscaras y marcala como revisada.</p><label className="review-check"><input type="checkbox" checked={reviewedPages.has(pageIndex)} onChange={e=>{setReviewedPages(prev=>{const next=new Set(prev);if(e.target.checked)next.add(pageIndex);else next.delete(pageIndex);return next})}}/><span>Página {pageIndex+1} revisada</span></label><div className="flex gap-2"><button className="secondary flex-1" onClick={()=>navigate(Math.max(0,pageIndex-1))} disabled={pageIndex===0}><ChevronLeft size={15}/> Anterior</button><button className="secondary flex-1" onClick={()=>navigate(Math.min(batch.pages_count-1,pageIndex+1))} disabled={pageIndex===batch.pages_count-1}>Siguiente <ChevronRight size={15}/></button></div></div>
        <label className="form-field"><span>Formato de salida</span><select value={mode} onChange={e=>setMode(e.target.value as 'completo'|'ocr')}><option value="completo">Completo: páginas + recortes</option><option value="ocr">Solo recortes para OCR</option></select></label>
+       <section className="annotation-review" aria-label="Revisión automática">
+        <strong>Revisión automática del lote</strong>
+        <p>Comprueba notas, órdenes y geometría. Las zonas compartidas pueden ser intencionales.</p>
+        {validationLoading&&<p role="status">Revisando anotaciones…</p>}
+        {validationError&&<p role="alert" className="field-error">{validationError}. Volvé a abrir esta sección para reintentar.</p>}
+        {validation&&<>
+         <p>{validation.errors.length} errores · {validation.warnings.length} advertencias</p>
+         {validation.errors.map((issue,i)=><div className="validation-error" key={`e${i}`}><p>{issue.message}</p><small>Página {issue.page_index+1}</small>
+          <button className="secondary" disabled={busy||saving||Object.keys(failed).length>0} onClick={()=>showIssue(issue)}>Ver región</button>
+          {issue.code==='missing_grade'&&issue.field&&<button className="secondary" disabled={busy||saving||Object.keys(failed).length>0} onClick={()=>markGrade(issue.field!,issue.page_index,issue.region_ids[0])}>Marcar calificación</button>}
+         </div>)}
+         {validation.warnings.map((issue,i)=><div className="validation-warning" key={`w${i}`}><p>{issue.message}</p><small>Página {issue.page_index+1}</small><button className="secondary" disabled={busy||saving||Object.keys(failed).length>0} onClick={()=>showIssue(issue)}>Ver región</button></div>)}
+         {validation.warnings.length>0&&<label className="review-check"><input type="checkbox" checked={acceptedFingerprint===validation.fingerprint} onChange={e=>setAcceptedFingerprint(e.target.checked?validation.fingerprint:null)}/><span>Revisé las advertencias y confirmo las excepciones intencionales, incluidas las respuestas compartidas.</span></label>}
+        </>}
+       </section>
        <label className="review-check"><input type="checkbox" checked={reviewed} onChange={e=>setReviewed(e.target.checked)}/><span>Revisé todas las páginas y confirmé que los datos sensibles están cubiertos. Entiendo que el sistema no detecta información privada automáticamente.</span></label>
        {pendingGrades.length>0&&<div className="grade-pending" role="alert"><strong>{pendingGrades.length} calificaciones pendientes</strong><p>Asigná pregunta/inciso y completá valor y denominador.</p>{pendingGrades.map(({page:index,region:r})=><button key={r.id} disabled={busy||saving||Object.keys(failed).length>0} onClick={()=>{navigate(index);setSelectedId(r.id);setTool('seleccion');setTab('editor');setPreview(false)}}>Página {index+1} · {r.question_id||'Sin pregunta'}{r.scope==='inciso'?'.'+r.subquestion_id:''}</button>)}</div>}
-       <button className="primary w-full" onClick={exportData} disabled={busy||saving||pendingGrades.length>0||Object.keys(failed).length>0||!reviewed||reviewedPages.size!==batch.pages_count||regionCount===0}><FileDown size={17}/> Generar exportación</button>
+       <button className="primary w-full" onClick={exportData} disabled={busy||saving||validationBlocked||pendingGrades.length>0||Object.keys(failed).length>0||!reviewed||reviewedPages.size!==batch.pages_count||regionCount===0}><FileDown size={17}/> Generar exportación</button>
        {exportLink&&<a className="download-link" href={exportLink} download><Download size={17}/> Descargar ZIP preparado</a>}
        <div className="notice-privacy"><ShieldCheck size={17}/><span>El paquete no incluye PDF original, nombres de archivo de origen ni imágenes sin ocultar.</span></div>
       </div>}

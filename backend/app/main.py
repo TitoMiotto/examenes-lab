@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, model_validator
 from PIL import Image
 
 from .db import DATA_DIR, connect, init_db
-from .grading import grade_problem
+from .validation import validate_batch
 from .services import batch_dir, export_zip, oriented_image, png_bytes, redact, render_pdf, rotate_rectangle
 
 MAX_UPLOAD = 100 * 1024 * 1024
@@ -85,6 +85,8 @@ class RegionInput(BaseModel):
 class ExportInput(BaseModel):
     mode: Literal['completo','ocr'] = 'completo'
     privacy_reviewed: bool = False
+    warnings_reviewed: bool = False
+    validation_fingerprint: str | None = None
 
 
 def checked_batch(c, batch_id):
@@ -260,24 +262,32 @@ def delete_region(batch_id:str,region_id:str):
             raise HTTPException(404,'Región inexistente')
         return {'ok':True}
 
+@app.get('/api/batches/{batch_id}/validation')
+def validation_report(batch_id: str):
+    with connect() as c:
+        return validate_batch(serialized_batch(c, batch_id))
+
 @app.post('/api/batches/{batch_id}/exports',status_code=201)
 def create_export(batch_id:str,payload:ExportInput):
     if not payload.privacy_reviewed:
         raise HTTPException(422,'Revisá y confirmá las máscaras de privacidad antes de exportar')
     export_id=uid()
     with connect() as c:
+        c.execute('BEGIN IMMEDIATE')
         batch=checked_batch(c,batch_id)
         pages=[dict(r) for r in c.execute('SELECT * FROM pages WHERE batch_id=? ORDER BY page_index',(batch_id,))]
         regions=[dict(r) for r in c.execute('SELECT r.* FROM regions r JOIN pages p ON p.id=r.page_id WHERE p.batch_id=?',(batch_id,))]
         if not any(r['kind']!='privacidad' for r in regions):
             raise HTTPException(422,'Primero etiquetá al menos una región académica')
-        incomplete = [r for r in regions if grade_problem(r)]
-        if incomplete:
-            raise HTTPException(422, f'Hay {len(incomplete)} calificaciones pendientes: asigná pregunta/inciso y completá valor y denominador antes de exportar')
+        validation = validate_batch(serialized_batch(c, batch_id))
+        if validation['errors']:
+            raise HTTPException(422, {'message': 'Completá las notas de cada respuesta y resolvé los errores de revisión.', **validation})
+        if validation['warnings'] and (not payload.warnings_reviewed or payload.validation_fingerprint != validation['fingerprint']):
+            raise HTTPException(409, {'message': 'Revisá y confirmá las advertencias del lote actualizado antes de exportar.', **validation})
         outdir=DATA_DIR/'exports'
         outfile=outdir/f'{export_id}.zip'
         try:
-            report=export_zip(batch,pages,regions,export_id,payload.mode,outfile)
+            report=export_zip(batch,pages,regions,export_id,payload.mode,outfile, validation=validation)
         except Exception:
             outfile.unlink(missing_ok=True)
             raise

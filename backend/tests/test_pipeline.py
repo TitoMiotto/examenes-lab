@@ -25,6 +25,14 @@ def pdf_test() -> bytes:
     return doc.tobytes()
 
 
+def export_reviewed(client, batch_id, mode='ocr'):
+    report = client.get(f'/api/batches/{batch_id}/validation').json()
+    assert not report['errors'], report
+    return client.post(f'/api/batches/{batch_id}/exports', json={
+        'privacy_reviewed': True, 'mode': mode,
+        'warnings_reviewed': bool(report['warnings']), 'validation_fingerprint': report['fingerprint']})
+
+
 def test_full_pipeline():
     with TestClient(app) as client:
         pdf=pdf_test()
@@ -66,9 +74,13 @@ def test_full_pipeline():
             rotated=client.post(f'/api/batches/{batch_id}/pages/0/rotate?clockwise=true')
         ar=next(r for r in rotated.json()['pages'][0]['regions'] if r['id']==academic_id)
         assert (ar['x1'],ar['y1'],ar['x2'],ar['y2'])==(10,15,160,95)
+        score = client.post(f'/api/batches/{batch_id}/pages/0/regions', json={
+            'kind': 'calificacion', 'scope': 'pregunta', 'question_id': 'P1',
+            'score_value': 0, 'score_denominator': 10, 'x1': 5, 'y1': 5, 'x2': 20, 'y2': 20})
+        assert score.status_code == 201, score.text
         # No permitimos exportar sin revisión visual
         assert client.post(f'/api/batches/{batch_id}/exports',json={'privacy_reviewed':False}).status_code==422
-        res=client.post(f'/api/batches/{batch_id}/exports',json={'privacy_reviewed':True,'mode':'completo'})
+        res=export_reviewed(client, batch_id, 'completo')
         assert res.status_code==201,res.text
         response=client.get(res.json()['download_url'])
         assert response.status_code==200
@@ -76,7 +88,7 @@ def test_full_pipeline():
             names=z.namelist()
             assert 'manifest.json' in names
             assert len([n for n in names if n.startswith('paginas_desidentificadas/')])==3
-            assert len([n for n in names if n.startswith('recortes/')])==1
+            assert len([n for n in names if n.startswith('recortes/')])==2
             assert not any('original.pdf' in n or 'lote-alumnos' in n for n in names)
             manifest=json.loads(z.read('manifest.json'))
             assert len(manifest['examenes'])==2
@@ -86,7 +98,7 @@ def test_full_pipeline():
             # pixel de la máscara dentro del recorte es opaco y negro
             assert crop.getpixel((30-10,30-15))==(0,0,0)
         # El OCR-only no incluye páginas enteras
-        ocr=client.post(f'/api/batches/{batch_id}/exports',json={'privacy_reviewed':True,'mode':'ocr'})
+        ocr=export_reviewed(client, batch_id)
         assert ocr.status_code==201
         with zipfile.ZipFile(io.BytesIO(client.get(ocr.json()['download_url']).content)) as z:
             assert not any(n.startswith('paginas_desidentificadas/') for n in z.namelist())
@@ -125,12 +137,16 @@ def test_export_reading_sequences_per_question():
                 'question_id': 'P1', 'subquestion_id': inciso, 'reading_order': order})
             assert result.status_code == 201, result.text
             ids.append(result.json()['id'])
-        result = client.post(f'/api/batches/{batch_id}/exports', json={
-            'privacy_reviewed': True, 'mode': 'ocr'})
+        for page, question in [(0, 'P1'), (0, 'P2'), (2, 'P1')]:
+            score = client.post(f'/api/batches/{batch_id}/pages/{page}/regions', json={
+                'kind': 'calificacion', 'scope': 'pregunta', 'question_id': question,
+                'score_value': 1, 'score_denominator': 5, 'x1': 5, 'y1': 5, 'x2': 20, 'y2': 20})
+            assert score.status_code == 201, score.text
+        result = export_reviewed(client, batch_id)
         assert result.status_code == 201, result.text
         with zipfile.ZipFile(io.BytesIO(client.get(result.json()['download_url']).content)) as archive:
             manifest = json.loads(archive.read('manifest.json'))
-        assert manifest['schema_version'] == 3
+        assert manifest['schema_version'] == 4
         assert manifest['orden_lectura_por'] == 'campo'
         groups = {(g['examen_id'], g['pregunta_id'], g['tipo'], g['inciso_id']): g['regiones']
                   for g in manifest['preguntas']}
@@ -178,7 +194,7 @@ def test_teacher_scores_defaults_and_export():
                             (new_inc, {'scope': 'inciso', 'subquestion_id': 'c', 'score_value': 0, 'score_denominator': 2})]:
             response = client.put(f'/api/batches/{batch_id}/regions/{rid}', json={**base, **fields})
             assert response.status_code == 200, response.text
-        result = client.post(f'/api/batches/{batch_id}/exports', json={'privacy_reviewed': True, 'mode': 'ocr'})
+        result = export_reviewed(client, batch_id)
         assert result.status_code == 201, result.text
         with zipfile.ZipFile(io.BytesIO(client.get(result.json()['download_url']).content)) as archive:
             manifest = json.loads(archive.read('manifest.json'))
@@ -255,3 +271,44 @@ def test_ambiguous_legacy_text_survives_editing_an_incomplete_score():
                         x1=10, y1=10, x2=20, y2=20, value_text='ilegible')
     assert value.value_text == 'ilegible'
     assert value.score_value is None and value.score_denominator is None
+
+
+def test_validation_enforces_grades_and_reviews_the_current_snapshot():
+    with TestClient(app) as client:
+        batch_id = client.post('/api/batches?dpi=100', files={
+            'file': ('synthetic.pdf', pdf_test(), 'application/pdf')}).json()['id']
+        answer = {'kind': 'respuesta', 'question_id': 'P1', 'reading_order': 1,
+                  'x1': 10, 'y1': 15, 'x2': 160, 'y2': 95}
+        rid = client.post(f'/api/batches/{batch_id}/pages/0/regions', json=answer).json()['id']
+        initial = client.get(f'/api/batches/{batch_id}/validation').json()
+        assert any(i['code'] == 'missing_grade' for i in initial['errors'])
+        assert client.post(f'/api/batches/{batch_id}/exports', json={
+            'privacy_reviewed': True, 'warnings_reviewed': True,
+            'validation_fingerprint': initial['fingerprint']}).status_code == 422
+        for question in ['P1', 'P2']:
+            assert client.post(f'/api/batches/{batch_id}/pages/0/regions', json={
+                'kind': 'calificacion', 'question_id': question, 'scope': 'pregunta',
+                'x1': 5, 'y1': 5, 'x2': 25, 'y2': 20, 'score_value': 0, 'score_denominator': 10}).status_code == 201
+        shared = {**answer, 'kind': 'subpregunta', 'question_id': 'P2', 'subquestion_id': 'a',
+                  'x1': 20, 'y1': 25, 'x2': 150, 'y2': 80}
+        child = client.post(f'/api/batches/{batch_id}/pages/0/regions', json=shared).json()['id']
+        report = client.get(f'/api/batches/{batch_id}/validation').json()
+        assert not report['errors']
+        assert any(i['code'] == 'shared_question_area' for i in report['warnings'])
+        assert client.post(f'/api/batches/{batch_id}/exports', json={'privacy_reviewed': True}).status_code == 409
+        acknowledged = {'privacy_reviewed': True, 'mode': 'ocr', 'warnings_reviewed': True,
+                        'validation_fingerprint': report['fingerprint']}
+        exported = client.post(f'/api/batches/{batch_id}/exports', json=acknowledged)
+        assert exported.status_code == 201, exported.text
+        with zipfile.ZipFile(io.BytesIO(client.get(exported.json()['download_url']).content)) as archive:
+            manifest = json.loads(archive.read('manifest.json'))
+            assert manifest['revision_anotaciones']['advertencias_confirmadas'] is True
+            assert manifest['preguntas'][1]['alcance_calificacion'] == 'pregunta'
+            assert manifest['preguntas'][1]['calificaciones']
+        assert client.put(f'/api/batches/{batch_id}/regions/{child}', json={**shared, 'x1': 21}).status_code == 200
+        assert client.post(f'/api/batches/{batch_id}/exports', json=acknowledged).status_code == 409
+        # The previous acceptance cannot be reused after a geometry edit.
+        latest = client.get(f'/api/batches/{batch_id}/validation').json()
+        assert latest['fingerprint'] != report['fingerprint']
+        assert latest['warnings']
+        assert export_reviewed(client, batch_id).status_code == 201

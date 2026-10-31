@@ -7,7 +7,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageOps
 import fitz
 from .db import DATA_DIR
-from .grading import grade_problem
+from .grading import grade_problem, covering_grades
 
 Image.MAX_IMAGE_PIXELS = 150_000_000
 
@@ -67,9 +67,18 @@ def png_bytes(img: Image.Image) -> bytes:
     return buff.getvalue()
 
 
-def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: str, mode: str, output: Path):
+def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: str, mode: str, output: Path, validation: dict | None = None):
     if any(grade_problem(r) for r in regions):
         raise ValueError('Hay calificaciones incompletas o sin pregunta/inciso')
+    exam_regions = {}
+    current_exam = 0
+    for page in pages:
+        if page['is_exam_start']:
+            current_exam += 1
+        exam_regions.setdefault(current_exam, []).extend(r for r in regions if r['page_id'] == page['id'])
+    for members in exam_regions.values():
+        if any(r['kind'] in ('respuesta', 'subpregunta') and not covering_grades(members, r) for r in members):
+            raise ValueError('Cada respuesta debe tener una calificación completa')
     by_page = {}
     for r in regions:
         by_page.setdefault(r['page_id'], []).append(r)
@@ -124,19 +133,20 @@ def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: s
             key = (item['examen_id'], item['pregunta_id'], item['tipo'],
                    item['inciso_id'] if item['tipo'] == 'subpregunta' else None)
             questions.setdefault(key, []).append(item)
-        question_sequences = [
-            {'examen_id': exam, 'pregunta_id': question, 'tipo': kind, 'inciso_id': subquestion,
-             'calificaciones': [item['region_id'] for item in items
-                                if item['tipo'] == 'calificacion' and item['examen_id'] == exam
-                                and item['pregunta_id'] == question
-                                and ((kind == 'respuesta' and item['alcance'] == 'pregunta')
-                                     or (kind == 'subpregunta' and item['alcance'] == 'inciso' and item['inciso_id'] == subquestion))],
-             'regiones': [item['region_id'] for item in sorted(
-                 members, key=lambda item: (item['orden'], item['pagina_original'], item['region_id']))]}
-            for (exam, question, kind, subquestion), members in questions.items()
-        ]
+        question_sequences = []
+        for (exam, question, kind, subquestion), members in questions.items():
+            matching = [item for item in items if item['tipo'] == 'calificacion'
+                        and item['examen_id'] == exam and item['pregunta_id'] == question]
+            own = [item for item in matching if kind == 'subpregunta' and item['alcance'] == 'inciso' and item['inciso_id'] == subquestion]
+            scores = own or [item for item in matching if item['alcance'] == 'pregunta']
+            question_sequences.append({
+                'examen_id': exam, 'pregunta_id': question, 'tipo': kind, 'inciso_id': subquestion,
+                'calificaciones': [item['region_id'] for item in scores],
+                'alcance_calificacion': 'inciso' if own else 'pregunta',
+                'regiones': [item['region_id'] for item in sorted(members, key=lambda item: (item['orden'], item['pagina_original'], item['region_id']))],
+            })
         manifest = {
-            'schema_version':3,
+            'schema_version':4,
             'exportacion_id':export_id,
             'lote_id_anonimo':batch['id'],
             'modo':mode,
@@ -148,5 +158,8 @@ def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: s
             'preguntas':question_sequences,
             'politica_privacidad':'Mascaras opacas sobre pixeles; original no incluido. Requiere revision visual previa.'
         }
+        if validation is not None:
+            manifest['revision_anotaciones'] = {'advertencias_confirmadas': bool(validation['warnings']),
+                                                'advertencias': validation['warnings']}
         z.writestr('manifest.json',json.dumps(manifest,ensure_ascii=False,indent=2).encode('utf-8'))
     return {'file_count': file_count, 'regions_count':len(items), 'exams_count':len(exam_list)}

@@ -28,3 +28,12 @@ export function nextGradeTarget(batch:Batch,page:Page,scope:GradeScope,selected:
  for(let i=letters.length-1;i>=0;i--){if(letters[i]!=='z'){letters[i]=String.fromCharCode(letters[i].charCodeAt(0)+1);return {question,inciso:letters.join('')}}letters[i]='a'}
  return {question,inciso:'a'+letters.join('')};
 }
+
+export function coveringGrades(batch:Batch,page:Page,response:Region):Region[]{
+ const valid=batch.pages.filter(p=>p.exam_id===page.exam_id).flatMap(p=>p.regions)
+  .filter(r=>r.kind==='calificacion'&&!gradeProblem(r)&&r.question_id===response.question_id);
+ const question=valid.filter(r=>r.scope==='pregunta');
+ if(response.kind==='respuesta')return question;
+ const own=valid.filter(r=>r.scope==='inciso'&&r.subquestion_id===response.subquestion_id);
+ return own.length?own:question;
+}

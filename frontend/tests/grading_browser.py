@@ -85,7 +85,17 @@ def check_grades(page, api, base, batch_id, ids):
     page.locator('.region-row').filter(has_text='P1.b').click()
     expect(page.get_by_role('textbox', name='Valor obtenido', exact=True)).to_have_value('1')
     expect(page.get_by_role('textbox', name='Denominador', exact=True)).to_have_value('2')
-    result = api.post(f'/api/batches/{batch_id}/exports', data={'privacy_reviewed': True, 'mode': 'ocr'})
+    page.get_by_role('button', name='Exportar', exact=True).click()
+    expect(page.locator('.annotation-review')).to_contain_text('0 errores')
+    for index in range(3):
+        page.locator('.page-tile').nth(index).click()
+        page.locator('.per-page-review input').check()
+    page.locator('.right-body > .review-check input').check()
+    if page.locator('.annotation-review input').count():
+        page.locator('.annotation-review input').check()
+    with page.expect_response(lambda r: '/exports' in r.url and r.request.method == 'POST') as response:
+        page.get_by_role('button', name='Generar exportación').click()
+    result = response.value
     assert result.status == 201, result.text()
     with zipfile.ZipFile(io.BytesIO(api.get(result.json()['download_url']).body())) as archive:
         manifest = json.loads(archive.read('manifest.json'))

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {gradeProblem,nextGradeTarget,previousDenominator} from '../src/grading.ts';
+import {gradeProblem,nextGradeTarget,previousDenominator,coveringGrades} from '../src/grading.ts';
 const grade=(question,scope='pregunta',inciso=null,denominator=10)=>({kind:'calificacion',question_id:question,scope,subquestion_id:inciso,score_value:0,score_denominator:denominator});
 const first={exam_id:'EX_1',page_index:0,regions:[grade('P1'),grade('P2','pregunta',null,5),grade('P1','inciso','a',3)]};
 const second={exam_id:'EX_2',page_index:1,regions:[]};
@@ -27,4 +27,18 @@ test('scores require a field and both numbers; zero is a valid obtained value',(
   assert.ok(gradeProblem({...grade('P1'),...change}),JSON.stringify(change));
  }
  assert.equal(gradeProblem({kind:'respuesta'}),null);
+});
+
+test('all fragments share the field grade and incisos may inherit the question grade',()=>{
+ const response={kind:'respuesta',question_id:'P1'};
+ const sub={kind:'subpregunta',question_id:'P1',subquestion_id:'a'};
+ const parent=grade('P1');
+ const own=grade('P1','inciso','a',3);
+ const page={exam_id:'EX_1',regions:[parent]};
+ const batch={pages:[page,{exam_id:'EX_2',regions:[grade('P2')]}]};
+ assert.deepEqual(coveringGrades(batch,page,response),[parent]);
+ assert.deepEqual(coveringGrades(batch,page,sub),[parent]);
+ page.regions.push(own);
+ assert.deepEqual(coveringGrades(batch,page,sub),[own]);
+ assert.deepEqual(coveringGrades(batch,page,{...response,question_id:'P2'}),[]);
 });

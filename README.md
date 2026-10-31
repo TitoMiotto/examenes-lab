@@ -62,7 +62,7 @@ Ingresá a **http://127.0.0.1:5173**. El backend tiene documentación en http://
 
 La imagen ocupa el ancho disponible del visor y permite desplazamiento vertical. No hay encabezado sobre la imagen: la navegación, el zoom y las herramientas están en el panel derecho. El botón de documento activo permite ocultar o mostrar la columna izquierda. La previsualización anonimizada se muestra en el visor central, en modo de solo lectura. Si falla un autoguardado, se conserva el cambio local y aparece **Reintentar guardado**; la exportación permanece deshabilitada hasta guardarlo.
 
-El manifiesto de exportación usa `schema_version: 3` y `orden_lectura_por: "campo"`. Incluye `preguntas`: grupos por `examen_id`, `pregunta_id`, `tipo` e `inciso_id`, con los identificadores de regiones ordenados por su secuencia de fragmentos. Las respuestas usan `tipo: "respuesta"` e `inciso_id: null`; las subpreguntas usan `tipo: "subpregunta"` y su inciso. Los consumidores del manifiesto deben usar esos cuatro campos para separar las secuencias. Se conserva también la lista completa `regiones`.
+El manifiesto de exportación usa `schema_version: 4` y `orden_lectura_por: "campo"`. Incluye `preguntas`: grupos por `examen_id`, `pregunta_id`, `tipo` e `inciso_id`, con los identificadores de regiones ordenados por su secuencia de fragmentos. Las respuestas usan `tipo: "respuesta"` e `inciso_id: null`; las subpreguntas usan `tipo: "subpregunta"` y su inciso. Los consumidores del manifiesto deben usar esos cuatro campos para separar las secuencias. Se conserva también la lista completa `regiones`.
 
 ## Calificaciones docentes
 
@@ -70,11 +70,24 @@ Las calificaciones corresponden a una **pregunta** o un **inciso**; no hay nota 
 
 Cada nota requiere **valor obtenido** y **denominador**, en campos separados. Se aceptan decimales con coma o punto y notas de cero; el denominador debe ser positivo y el valor no puede superarlo. Al crear una región se enfoca automáticamente el valor. En los siguientes exámenes del mismo lote, se propone el denominador ya usado para esa pregunta/inciso; la nota obtenida siempre comienza vacía. Podés modificar el denominador propuesto.
 
-Se autoguardan también los borradores de notas incompletas. **Exportar** muestra cuáles faltan completar y permite abrir cada una. La API también impide generar paquetes con calificaciones incompletas o con alcance de examen.
+Se autoguardan también los borradores de notas incompletas. **Exportar** muestra cuáles faltan completar y permite abrir cada una. La API también impide generar paquetes con calificaciones incompletas o con alcance de examen. Cada pregunta con respuesta anotada debe tener una calificación completa antes de exportar; todos sus fragmentos comparten esa nota. Los incisos pueden usar una nota propia o la de su pregunta, sin inventar notas individuales. El botón **Marcar calificación** permite dibujar la nota para el campo pendiente.
 
 La base existente se actualiza sin borrar anotaciones. Las fracciones antiguas inequívocas, como `7,5 / 10`, se convierten a números; se conserva el texto original. Las notas antiguas de examen deben asignarse manualmente a una pregunta/inciso. No se inventan denominadores para textos ambiguos.
 
-En el manifiesto v3 cada calificación incluye `valor` y `denominador` numéricos, además de `valor_manual` para lectura humana. Cada campo en `preguntas` incluye `calificaciones`, con las regiones docentes de ese mismo examen y pregunta/inciso; esos IDs se mantienen separados del orden de fragmentos de estudiantes. No se ejecuta OCR.
+En el manifiesto v4 cada calificación incluye `valor` y `denominador` numéricos, además de `valor_manual` para lectura humana. Cada campo en `preguntas` incluye `calificaciones`, con las regiones docentes de ese mismo examen y pregunta/inciso; esos IDs se mantienen separados del orden de fragmentos de estudiantes. `alcance_calificacion` indica si se usó una nota del inciso o la de la pregunta. No se ejecuta OCR.
+
+## Revisión determinista de anotaciones
+
+En **Revisar lote / Exportar** se comprueban las anotaciones del lote completo. No se ejecuta OCR ni se cambian etiquetas automáticamente.
+
+- Bloquean la exportación: respuestas sin nota completa, calificaciones incompletas, órdenes repetidos o inválidos y regiones fuera de la página.
+- Se señalan para revisión: recortes muy pequeños (lado menor inferior al máximo entre 12 píxeles y el 2 % del lado menor de la página), órdenes con saltos o que vuelven a páginas anteriores, saltos en incisos, regiones casi idénticas (intersección/unión ≥95 %), incisos que ocupan principalmente otra pregunta (≥80 % de cobertura), denominadores diferentes y notas sin respuesta marcada o con valores distintos para el mismo campo.
+- Las advertencias pueden ser intencionales: una misma respuesta puede valer para varias preguntas, y una pregunta puede estar sin contestar. Se pueden confirmar como excepciones sin relabelar ni mover sus regiones.
+- Se revisa el estado actual del lote; cualquier modificación de las anotaciones invalida la confirmación anterior. La API verifica la misma revisión al exportar. El manifiesto incluye `revision_anotaciones` como constancia de las advertencias confirmadas.
+
+Los criterios geométricos son indicios, no una lectura de la respuesta ni del criterio del docente. El algoritmo no puede detectar por sí solo que un inciso manuscrito «e» se etiquetó «c».
+
+Las correcciones docentes que están dentro de las respuestas se conservan en las imágenes. Su filtrado se resolverá en la etapa de OCR mediante preprocesamiento o instrucciones; no se intenta eliminarlas durante la anotación ni se señalan como errores de esta revisión.
 
 ## Almacenamiento
 
@@ -120,6 +133,7 @@ Prueba de interacción en navegador (requiere las dependencias anteriores, Pytho
 ```bash
 python frontend/tests/editor_browser.py
 python frontend/tests/grading_browser.py
+python frontend/tests/validation_browser.py
 ```
 
 Este test inicia sus propios servidores en puertos libres y utiliza datos temporales. Comprueba selección de regiones cercanas, arrastre, los ocho tiradores, controles superpuestos, límites de página, zoom y scroll, herramientas persistentes y secuencias por inciso.
