@@ -111,6 +111,19 @@ def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: s
                     file_count += 1
                     meta['recorte'] = filename
                 items.append(meta)
+        # Each student's question is an independent reading sequence, across pages.
+        questions = {}
+        for item in items:
+            if item['tipo'] not in ('respuesta', 'subpregunta'):
+                continue
+            key = (item['examen_id'], item['pregunta_id'])
+            questions.setdefault(key, []).append(item)
+        question_sequences = [
+            {'examen_id': exam, 'pregunta_id': question,
+             'regiones': [item['region_id'] for item in sorted(
+                 members, key=lambda item: (item['orden'], item['pagina_original'], item['region_id']))]}
+            for (exam, question), members in questions.items()
+        ]
         manifest = {
             'schema_version':1,
             'exportacion_id':export_id,
@@ -120,6 +133,8 @@ def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: s
             'paginas':len(pages),
             'examenes':exam_list,
             'regiones':items,
+            'orden_lectura_por':'pregunta',
+            'preguntas':question_sequences,
             'politica_privacidad':'Mascaras opacas sobre pixeles; original no incluido. Requiere revision visual previa.'
         }
         z.writestr('manifest.json',json.dumps(manifest,ensure_ascii=False,indent=2).encode('utf-8'))

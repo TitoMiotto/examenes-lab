@@ -105,3 +105,27 @@ def test_orientation_math():
         result=rotate_rectangle(result,w,h,True)
         w,h=h,w
     assert result==box
+
+
+def test_export_reading_sequences_per_question():
+    with TestClient(app) as client:
+        batch_id = client.post('/api/batches?dpi=100', files={
+            'file': ('synthetic.pdf', pdf_test(), 'application/pdf')}).json()['id']
+        client.put(f'/api/batches/{batch_id}/boundaries', json={'starts': [0, 2]})
+        ids = []
+        for page, question, order in [(0, 'P1', 1), (0, 'P2', 1), (1, 'P1', 2), (2, 'P1', 1)]:
+            result = client.post(f'/api/batches/{batch_id}/pages/{page}/regions', json={
+                'kind': 'respuesta', 'x1': 10, 'y1': 10, 'x2': 80, 'y2': 80,
+                'question_id': question, 'reading_order': order})
+            assert result.status_code == 201, result.text
+            ids.append(result.json()['id'])
+        result = client.post(f'/api/batches/{batch_id}/exports', json={
+            'privacy_reviewed': True, 'mode': 'ocr'})
+        assert result.status_code == 201, result.text
+        with zipfile.ZipFile(io.BytesIO(client.get(result.json()['download_url']).content)) as archive:
+            manifest = json.loads(archive.read('manifest.json'))
+        assert manifest['orden_lectura_por'] == 'pregunta'
+        groups = {(g['examen_id'], g['pregunta_id']): g['regiones'] for g in manifest['preguntas']}
+        assert groups == {('EX_0001', 'P1'): [ids[0], ids[2]],
+                          ('EX_0001', 'P2'): [ids[1]],
+                          ('EX_0002', 'P1'): [ids[3]]}
