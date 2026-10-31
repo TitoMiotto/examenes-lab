@@ -2,7 +2,7 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 import {Archive,ArrowLeft,CheckCircle2,ChevronLeft,ChevronRight,Download,Eye,EyeOff,FileDown,FilePlus2,FileText,Layers3,LoaderCircle,MousePointer2,RotateCcw,RotateCw,PanelLeftClose,PanelLeftOpen,Scissors,ShieldCheck,Trash2,UploadCloud, X, Info, ZoomIn, ZoomOut} from 'lucide-react';
 import {api,type Batch,type BatchSummary,type Kind,type Region,type RegionPayload,type Scope} from './api';
 import EditorCanvas,{LABELS} from './EditorCanvas';
-import {academic, containingAnswer, identifiers, questionOrder} from './annotations';
+import {academic, containingAnswer, identifiers, questionOrder, nextQuestion, nextSubquestion} from './annotations';
 
 const KINDS:Kind[]=['respuesta','subpregunta','calificacion','observacion','privacidad'];
 const order=(a:Region,b:Region)=>(a.question_id||'').localeCompare(b.question_id||'', 'es', {numeric:true})||(a.reading_order??0)-(b.reading_order??0);
@@ -45,7 +45,7 @@ function RegionProperties({r,onSave,onDelete,busy,questions,subquestions}:{r:Reg
   </select></label>}
   {hasQuestion&&<IdentifierSelect label="Pregunta" prefix="P" value={draft.question_id||'P1'} values={questions} onChange={v=>set('question_id',v)}/>}
   {(draft.kind==='subpregunta'||draft.kind==='calificacion'&&draft.scope==='inciso')&&<IdentifierSelect label="Inciso" prefix="" value={draft.subquestion_id||'a'} values={subquestions} onChange={v=>set('subquestion_id',v)}/>}
-  {academic(draft.kind)&&<label className="form-field"><span>Orden dentro de {draft.question_id}</span><input type="number" min="1" value={draft.reading_order??1} onChange={e=>{const n=Number(e.target.value);if(Number.isInteger(n)&&n>0)set('reading_order',n)}}/></label>}
+  {academic(draft.kind)&&<label className="form-field"><span>Orden de fragmentos de {draft.question_id}{draft.kind==='subpregunta'?'.'+draft.subquestion_id:''}</span><input type="number" min="1" value={draft.reading_order??1} onChange={e=>{const n=Number(e.target.value);if(Number.isInteger(n)&&n>0)set('reading_order',n)}}/></label>}
   {draft.kind==='calificacion'&&<label className="form-field"><span>Valor de nota (opcional)</span><input value={draft.value_text||''} onChange={e=>set('value_text',e.target.value)} placeholder="Ej. 7,5 / 10"/></label>}
   {draft.kind==='observacion'&&<label className="form-field"><span>Texto docente (opcional)</span><textarea rows={3} value={draft.note_text||''} onChange={e=>set('note_text',e.target.value)} placeholder="Transcripción manual"/></label>}
   {draft.kind==='privacidad'&&<div className="notice-privacy"><ShieldCheck size={16}/><span>Esta área se reemplazará por píxeles negros en toda imagen exportada.</span></div>}
@@ -107,8 +107,8 @@ export default function App(){
  };
  const saveRegion=async(payload:RegionPayload)=>{
   if(!batch||!page||!selected)return;
-  if(academic(payload.kind)&&(payload.question_id!==selected.question_id||!academic(selected.kind)))
-   payload={...payload,reading_order:questionOrder(batch,page,payload.question_id||'P1',selected.id)};
+  if(academic(payload.kind)&&(payload.question_id!==selected.question_id||payload.kind!==selected.kind||payload.kind==='subpregunta'&&payload.subquestion_id!==selected.subquestion_id))
+   payload={...payload,reading_order:questionOrder(batch,page,payload.question_id||'P1',selected.id,payload.kind,payload.subquestion_id)};
   await persistRegion(selected.id,payload);
  };
  const deleteRegion=async()=>{if(!batch||!selected||saving||Object.keys(failed).length)return;
@@ -116,11 +116,12 @@ export default function App(){
  const createRegion=async(box:{x1:number;y1:number;x2:number;y2:number})=>{if(!batch||!page||tool==='seleccion')return;
  if(busy||saving||Object.keys(failed).length)return;
  const parent=tool==='subpregunta'?containingAnswer(page,box):undefined;
- const question=parent?.question_id||selected?.question_id||'P1';
+ const question=tool==='respuesta'?nextQuestion(batch,page):parent?.question_id||selected?.question_id||'P1';
+ const inciso=tool==='subpregunta'?nextSubquestion(batch,page,question):null;
  const payload:RegionPayload={...box,kind:tool,question_id:academic(tool)?question:null,
- subquestion_id:tool==='subpregunta'?'a':null,reading_order:academic(tool)?questionOrder(batch,page,question):null,
+ subquestion_id:inciso,reading_order:academic(tool)?questionOrder(batch,page,question,undefined,tool,inciso):null,
  scope:tool==='calificacion'?'examen':null,value_text:null,note_text:null};
- await run(async()=>{const result=await api.createRegion(batch.id,pageIndex,payload);revision.current++;setExportLink(null);await reload();setTool('seleccion');setSelectedId(result.id);setReviewed(false);setReviewedPages(new Set())},'Región guardada automáticamente.')};
+ await run(async()=>{const result=await api.createRegion(batch.id,pageIndex,payload);revision.current++;setExportLink(null);await reload();setSelectedId(result.id);setReviewed(false);setReviewedPages(new Set())},'Región guardada automáticamente.')};
  const moveRegion=async(id:string,box:{x1:number;y1:number;x2:number;y2:number})=>{if(!batch||!page)return;
  const region=page.regions.find(r=>r.id===id);if(!region)return;
  const clamp=(v:number,max:number)=>Math.max(0,Math.min(v,max));
@@ -171,19 +172,19 @@ export default function App(){
     <div className="sidebar-footer"><Info size={15}/><span>Usá las líneas divisorias para indicar dónde comienza cada examen.</span></div>
    </aside>
    <main className="main-stage">
+    <div className="canvas-host">{page&&<EditorCanvas key={page.id} page={page} url={api.image(batch.id,pageIndex,false,preview)+`&v=${page.rotation}&revision=${preview?revision.current:0}`} tool={tool} zoom={zoom} selected={selectedId} readOnly={preview||busy} preview={preview} select={id=>{setSelectedId(id);setTool('seleccion')}} create={createRegion} move={moveRegion}/>}</div>
+    <div className="stage-foot"><span><Info size={14}/> {saving?'Guardando cambios…':Object.keys(failed).length?'Hay cambios sin guardar':preview?'Vista anonimizada · solo lectura':'Todos los cambios guardados'}</span><span>{page?.width} × {page?.height} px · {batch.dpi} DPI</span></div>
+   </main>
+   <aside className="rightbar">
+     <div className="right-tabs"><button className={tab==='editor'?'current':''} onClick={()=>setTab('editor')}>Regiones</button><button className={tab==='export'?'current':''} onClick={()=>setTab('export')}>Exportar</button></div>
     <div className="editor-toolbar"><button className="icon-button" title={sidebar?'Ocultar documento activo':'Mostrar documento activo'} aria-expanded={sidebar} onClick={()=>setSidebar(v=>!v)}>{sidebar?<PanelLeftClose size={18}/>:<PanelLeftOpen size={18}/>}</button><div className="flex items-center gap-2"><button className="icon-button" onClick={()=>navigate(Math.max(pageIndex-1,0))} disabled={pageIndex===0}><ChevronLeft size={18}/></button><span className="page-counter">Página <b>{pageIndex+1}</b> de {batch.pages_count}</span><button className="icon-button" onClick={()=>navigate(Math.min(pageIndex+1,batch.pages_count-1))} disabled={pageIndex===batch.pages_count-1}><ChevronRight size={18}/></button></div>
      <div className="toolbar-sep"/><div className="flex items-center gap-2"><button className="icon-button" title="Rotar a la izquierda" onClick={()=>rotate(false)} disabled={busy}><RotateCcw size={17}/></button><button className="icon-button" title="Rotar a la derecha" onClick={()=>rotate(true)} disabled={busy}><RotateCw size={17}/></button><span className="toolbar-hint">Rotar hoja</span></div>
      <div className="toolbar-grow"/>
      <button className="icon-button" onClick={()=>setZoom(v=>Math.max(0.4,+(v-.2).toFixed(2)))} title="Alejar"><ZoomOut size={17}/></button><span className="zoom-label">{Math.round(zoom*100)}%</span><button className="icon-button" onClick={()=>setZoom(v=>Math.min(3,+(v+.2).toFixed(2)))} title="Acercar"><ZoomIn size={17}/></button>
     </div>
-    <div className="tools-line" aria-label="Herramientas de anotación"><button onClick={()=>setTool('seleccion')} className={`tool ${tool==='seleccion'?'active':''}`}><MousePointer2 size={15}/> Seleccionar</button><span className="tools-divider"/>
-     {KINDS.map(k=><button key={k} className={`tool ${tool===k?'active':''}`} style={{'--tag-color':LABELS[k].color} as React.CSSProperties} onClick={()=>{setTool(k);setPreview(false)}}><span className="color-dot"/>{LABELS[k].title}</button>)}
+    <div className="tools-line" aria-label="Herramientas de anotación"><button aria-pressed={tool==='seleccion'} onClick={()=>setTool('seleccion')} className={`tool ${tool==='seleccion'?'active':''}`}><MousePointer2 size={15}/> Seleccionar</button><span className="tools-divider"/>
+     {KINDS.map(k=><button key={k} aria-pressed={tool===k} className={`tool ${tool===k?'active':''}`} style={{'--tag-color':LABELS[k].color} as React.CSSProperties} onClick={()=>{setTool(k);setPreview(false)}}><span className="color-dot"/>{LABELS[k].title}</button>)}
     </div>
-    <div className="canvas-host">{page&&<EditorCanvas key={page.id} page={page} url={api.image(batch.id,pageIndex,false,preview)+`&v=${page.rotation}&revision=${preview?revision.current:0}`} tool={tool} zoom={zoom} selected={selectedId} readOnly={preview||busy||saving} preview={preview} select={id=>{setSelectedId(id);setTool('seleccion')}} create={createRegion} move={moveRegion}/>}</div>
-    <div className="stage-foot"><span><Info size={14}/> {saving?'Guardando cambios…':Object.keys(failed).length?'Hay cambios sin guardar':preview?'Vista anonimizada · solo lectura':'Todos los cambios guardados'}</span><span>{page?.width} × {page?.height} px · {batch.dpi} DPI</span></div>
-   </main>
-   <aside className="rightbar">
-     <div className="right-tabs"><button className={tab==='editor'?'current':''} onClick={()=>setTab('editor')}>Regiones</button><button className={tab==='export'?'current':''} onClick={()=>setTab('export')}>Exportar</button></div>
      {tab==='editor'?<div className="right-body">
        {selected?<RegionProperties key={selected.id} questions={identifiers(['P1','P2','P3'],batch.pages.flatMap(p=>p.regions.map(r=>r.question_id)))} subquestions={identifiers(['a','b','c'],batch.pages.flatMap(p=>p.regions.filter(r=>r.question_id===selected.question_id).map(r=>r.subquestion_id)))} r={selected} onSave={saveRegion} onDelete={deleteRegion} busy={busy}/>:<div className="panel-placeholder"><div className="panel-icon"><MousePointer2 size={20}/></div><h3>Seleccioná una región</h3><p>Usá las herramientas para dibujar un rectángulo. Luego podrás asignarle pregunta, inciso, orden o calificación.</p></div>}
        <div className="border-t border-slate-200 pt-5 mt-6"><div className="flex justify-between items-center mb-3"><h3 className="panel-heading">Regiones de la página</h3><span className="id-chip">{page?.regions.length||0}</span></div>

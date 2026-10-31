@@ -119,13 +119,23 @@ def test_export_reading_sequences_per_question():
                 'question_id': question, 'reading_order': order})
             assert result.status_code == 201, result.text
             ids.append(result.json()['id'])
+        for page, inciso, order in [(0, 'a', 1), (1, 'a', 2), (0, 'b', 1)]:
+            result = client.post(f'/api/batches/{batch_id}/pages/{page}/regions', json={
+                'kind': 'subpregunta', 'x1': 20, 'y1': 20, 'x2': 60, 'y2': 60,
+                'question_id': 'P1', 'subquestion_id': inciso, 'reading_order': order})
+            assert result.status_code == 201, result.text
+            ids.append(result.json()['id'])
         result = client.post(f'/api/batches/{batch_id}/exports', json={
             'privacy_reviewed': True, 'mode': 'ocr'})
         assert result.status_code == 201, result.text
         with zipfile.ZipFile(io.BytesIO(client.get(result.json()['download_url']).content)) as archive:
             manifest = json.loads(archive.read('manifest.json'))
-        assert manifest['orden_lectura_por'] == 'pregunta'
-        groups = {(g['examen_id'], g['pregunta_id']): g['regiones'] for g in manifest['preguntas']}
-        assert groups == {('EX_0001', 'P1'): [ids[0], ids[2]],
-                          ('EX_0001', 'P2'): [ids[1]],
-                          ('EX_0002', 'P1'): [ids[3]]}
+        assert manifest['schema_version'] == 2
+        assert manifest['orden_lectura_por'] == 'campo'
+        groups = {(g['examen_id'], g['pregunta_id'], g['tipo'], g['inciso_id']): g['regiones']
+                  for g in manifest['preguntas']}
+        assert groups == {('EX_0001', 'P1', 'respuesta', None): [ids[0], ids[2]],
+                          ('EX_0001', 'P2', 'respuesta', None): [ids[1]],
+                          ('EX_0002', 'P1', 'respuesta', None): [ids[3]],
+                          ('EX_0001', 'P1', 'subpregunta', 'a'): [ids[4], ids[5]],
+                          ('EX_0001', 'P1', 'subpregunta', 'b'): [ids[6]]}

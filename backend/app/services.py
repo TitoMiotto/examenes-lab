@@ -111,21 +111,22 @@ def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: s
                     file_count += 1
                     meta['recorte'] = filename
                 items.append(meta)
-        # Each student's question is an independent reading sequence, across pages.
+        # Each response or subquestion field has its own fragment sequence across pages.
         questions = {}
         for item in items:
             if item['tipo'] not in ('respuesta', 'subpregunta'):
                 continue
-            key = (item['examen_id'], item['pregunta_id'])
+            key = (item['examen_id'], item['pregunta_id'], item['tipo'],
+                   item['inciso_id'] if item['tipo'] == 'subpregunta' else None)
             questions.setdefault(key, []).append(item)
         question_sequences = [
-            {'examen_id': exam, 'pregunta_id': question,
+            {'examen_id': exam, 'pregunta_id': question, 'tipo': kind, 'inciso_id': subquestion,
              'regiones': [item['region_id'] for item in sorted(
                  members, key=lambda item: (item['orden'], item['pagina_original'], item['region_id']))]}
-            for (exam, question), members in questions.items()
+            for (exam, question, kind, subquestion), members in questions.items()
         ]
         manifest = {
-            'schema_version':1,
+            'schema_version':2,
             'exportacion_id':export_id,
             'lote_id_anonimo':batch['id'],
             'modo':mode,
@@ -133,7 +134,7 @@ def export_zip(batch: dict, pages: list[dict], regions: list[dict], export_id: s
             'paginas':len(pages),
             'examenes':exam_list,
             'regiones':items,
-            'orden_lectura_por':'pregunta',
+            'orden_lectura_por':'campo',
             'preguntas':question_sequences,
             'politica_privacidad':'Mascaras opacas sobre pixeles; original no incluido. Requiere revision visual previa.'
         }

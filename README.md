@@ -54,15 +54,15 @@ Ingresá a **http://127.0.0.1:5173**. El backend tiene documentación en http://
 2. En la lista lateral, hacer clic en «Separar aquí» antes de la primera página de cada examen, dejando la primera página como inicio obligatorio.
 3. Rotar las páginas que lo necesiten.
 4. Elegir un tipo de región en la barra superior y arrastrar sobre la imagen. Asignar pregunta, inciso u orden desde el panel derecho. Usar **Privacidad** para las áreas que hay que ocultar, incluyendo legajos o nombres.
-   Cada creación, movimiento, cambio de tamaño o propiedad se guarda automáticamente. Los selectores de pregunta (`P1`, `P2`, `P3`, `+`) e inciso (`a`, `b`, `c`, `+`) permiten agregar identificadores sin escribirlos. Una subpregunta dibujada dentro de una respuesta hereda su pregunta y queda por encima para poder seleccionarla. El orden de lectura se calcula por pregunta de cada examen, incluso cuando continúa en otra página.
+   Cada creación, movimiento, cambio de tamaño o propiedad se guarda automáticamente. Los selectores de pregunta (`P1`, `P2`, `P3`, `+`) e inciso (`a`, `b`, `c`, `+`) permiten agregar identificadores sin escribirlos. Una subpregunta dibujada dentro de una respuesta hereda su pregunta y queda por encima para poder seleccionarla. La herramienta elegida sigue activa para dibujar varios rectángulos consecutivos. Cada respuesta nueva propone la siguiente pregunta (`P1`, `P2`, `P3`…) dentro del examen; cada subpregunta propone el siguiente inciso (`a`, `b`, `c`…) dentro de su pregunta. Para añadir otro fragmento a un campo existente, elegí su pregunta o inciso en el selector: el orden del fragmento se calcula automáticamente. El orden se calcula por campo de cada examen, incluso entre páginas: los fragmentos de respuesta `P1` tienen una secuencia propia; los de `P1.a` y `P1.b` tienen secuencias separadas.
 5. Abrir **Exportar**, previsualizar las páginas y revisar manualmente que **todos** los datos sensibles estén cubiertos. El botón de confirmación expresa que se verificó esto; la herramienta no detecta nombres automáticamente.
 6. Generar y descargar el ZIP. El original queda fuera de él.
 
 **Interpretación de las etiquetas:** `Subpregunta` se refiere a la *respuesta manuscrita* de un inciso, no al enunciado. Para una respuesta que ocupa varias regiones, asignar el mismo `question_id` (y el mismo inciso cuando corresponda) y definir un `reading_order` explícito. Calificaciones y observaciones docentes se exportan por separado.
 
-La imagen se ajusta al alto disponible. La barra de herramientas es compacta y el botón de la esquina superior izquierda oculta o muestra el documento activo. La previsualización anonimizada se muestra en el visor central, en modo de solo lectura. Si falla un autoguardado, se conserva el cambio local y aparece **Reintentar guardado**; la exportación permanece deshabilitada hasta guardarlo.
+La imagen ocupa el ancho disponible del visor y permite desplazamiento vertical. No hay encabezado sobre la imagen: la navegación, el zoom y las herramientas están en el panel derecho. El botón de documento activo permite ocultar o mostrar la columna izquierda. La previsualización anonimizada se muestra en el visor central, en modo de solo lectura. Si falla un autoguardado, se conserva el cambio local y aparece **Reintentar guardado**; la exportación permanece deshabilitada hasta guardarlo.
 
-El manifiesto de exportación incluye `preguntas`: grupos por `examen_id` y `pregunta_id`, con los identificadores de regiones ordenados por su secuencia de lectura. Se conserva también la lista completa `regiones`.
+El manifiesto de exportación usa `schema_version: 2` y `orden_lectura_por: "campo"`. Incluye `preguntas`: grupos por `examen_id`, `pregunta_id`, `tipo` e `inciso_id`, con los identificadores de regiones ordenados por su secuencia de fragmentos. Las respuestas usan `tipo: "respuesta"` e `inciso_id: null`; las subpreguntas usan `tipo: "subpregunta"` y su inciso. Los consumidores del manifiesto deben usar esos cuatro campos para separar las secuencias. Se conserva también la lista completa `regiones`.
 
 ## Almacenamiento
 
@@ -102,6 +102,14 @@ Pruebas de las reglas del editor (Node.js 24, sin dependencias adicionales):
 ```bash
 node --test frontend/tests/annotations.test.mjs
 ```
+
+Prueba de interacción en navegador (requiere las dependencias anteriores, Python con `playwright` instalado y Chromium en el sistema o `CHROMIUM_PATH`):
+
+```bash
+python frontend/tests/editor_browser.py
+```
+
+Este test inicia sus propios servidores en puertos libres y utiliza datos temporales. Comprueba selección de regiones cercanas, arrastre, los ocho tiradores, controles superpuestos, límites de página, zoom y scroll, herramientas persistentes y secuencias por inciso.
 
 ## Alcance actual y siguientes tareas
 

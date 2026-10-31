@@ -27,3 +27,12 @@
 @media(max-width:850px){.workspace{grid-template-columns:72px minmax(0,1fr) 215px}.workspace.sidebar-hidden{grid-template-columns:0 minmax(0,1fr) 215px}.rightbar{display:flex}.editor-toolbar{flex-wrap:wrap;height:auto;min-height:42px}.topbar .brand{min-width:0}.topbar .brand small,.beta{display:none}.tool{font-size:10px}.tool .color-dot{width:8px;height:8px}}
 @media(max-width:550px){.workspace{grid-template-columns:0 minmax(0,1fr) 165px}.leftbar{visibility:hidden}.workspace.sidebar-hidden{grid-template-columns:0 minmax(0,1fr) 165px}.right-body{padding:10px 8px}.topbar{padding:0 8px}.stage-foot span:last-child{display:none}.tool{font-size:9px;padding:3px}.page-counter{font-size:10px}.topbar .brand strong{font-size:14px}.top-button{padding:5px}}
 .image-loading{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;font-size:12px;color:#526881;z-index:2;background:#e8edf2}
+/* No header above the document: navigation and tools live beside it. */
+.rightbar .editor-toolbar{height:auto;flex-wrap:wrap;min-height:42px;padding:6px;gap:4px}
+.rightbar .toolbar-grow,.rightbar .toolbar-sep{display:none}
+.rightbar .tools-line{padding:6px;gap:4px;border-bottom:1px solid #e6ebf1}
+.canvas-inner{padding:0;align-items:flex-start}
+.canvas-inner .konvajs-content{background:transparent;box-shadow:none}
+.canvas-scroller{scrollbar-gutter:stable;touch-action:none}
+.main-stage{position:relative}
+.stage-foot{position:absolute;bottom:0;left:0;right:0;background:#ffffffde;pointer-events:none;z-index:3}
