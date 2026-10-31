@@ -1,0 +1,12 @@
+# Nunca versionar documentos fuente ni derivados sensibles
+/data/
+/backend/data/
+/backend/.venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+/frontend/node_modules/
+/frontend/dist/
+*.zip
+.DS_Store
+.env
