@@ -1,0 +1,321 @@
+{
+  "version": 1,
+  "lote_id_anonimo": "f6d73907297243a49882cf4d4b8bc104",
+  "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882",
+  "alcance": "Solo nueve recortes adjuntos; texto de estudiantes. Anotaciones docentes excluidas.",
+  "convenciones": {
+    "ilegible": "No se propone lectura.",
+    "dudoso": "Lectura tentativa que requiere revisión.",
+    "diagramas": "Linealizados; no son equivalencia exacta de disposición visual.",
+    "validacion": "Todas las transcripciones requieren revisión humana antes de usarlas como referencia validada."
+  },
+  "regiones": [
+    {
+      "region_id": "f66aed48cab047ab8c92c5d03424321a",
+      "examen_id": "EX_0005",
+      "pagina_original": 27,
+      "pagina_en_examen": 5,
+      "tipo": "subpregunta",
+      "pregunta_id": "P5",
+      "inciso_id": "f",
+      "orden": 1,
+      "bbox_px": [
+        235,
+        1058,
+        1608,
+        1246
+      ],
+      "recorte": "recortes/estudiantes/f66aed48cab047ab8c92c5d03424321a.png",
+      "imagen_local": "imagenes/f66aed48cab047ab8c92c5d03424321a.png",
+      "transcripcion": "F) Si, ya que recientemente en 2009 un alumno (no recuerdo\nel nombre) descubrio una MTU con solo 2 estados, y al ser\nuna MTU, significa que tiene la capacidad de emular otra MT.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "2 estados",
+          "nota": "El numeral está sobrescrito; lectura tentativa 2."
+        },
+        {
+          "fragmento": "descubrio",
+          "nota": "No se distingue con seguridad una tilde. No se añade."
+        }
+      ]
+    },
+    {
+      "region_id": "1f87f53e1e4d4ac384cf3c0da3dacac4",
+      "examen_id": "EX_0004",
+      "pagina_original": 20,
+      "pagina_en_examen": 4,
+      "tipo": "subpregunta",
+      "pregunta_id": "P5",
+      "inciso_id": "c",
+      "orden": 1,
+      "bbox_px": [
+        14,
+        1829,
+        1478,
+        2117
+      ],
+      "recorte": "recortes/estudiantes/1f87f53e1e4d4ac384cf3c0da3dacac4.png",
+      "imagen_local": "imagenes/1f87f53e1e4d4ac384cf3c0da3dacac4.png",
+      "transcripcion": "c) Si podria por que la MTU presenta como\ncadena de entrada una descripción codificada de\n otra MT, se ejecuta y da como resultado el\nresultado de esa máquina que estaba en la cinta.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "Si podria",
+          "nota": "Revisar tildes: no se distinguen claramente."
+        },
+        {
+          "fragmento": "resultado",
+          "nota": "Revisar el primer «resultado», cuyo trazo puede parecer «resultodo»."
+        }
+      ]
+    },
+    {
+      "region_id": "5aaf62f7cdc64f81949dad11794684f6",
+      "examen_id": "EX_0002",
+      "pagina_original": 7,
+      "pagina_en_examen": 3,
+      "tipo": "subpregunta",
+      "pregunta_id": "P4",
+      "inciso_id": "c",
+      "orden": 1,
+      "bbox_px": [
+        160,
+        1573,
+        927,
+        1657
+      ],
+      "recorte": "recortes/estudiantes/5aaf62f7cdc64f81949dad11794684f6.png",
+      "imagen_local": "imagenes/5aaf62f7cdc64f81949dad11794684f6.png",
+      "transcripcion": "c- E(n) = 3N + 2 [ilegible: trazo entre la fórmula y «es»] es de orden 1.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "E(n), N",
+          "nota": "El argumento de E y la N de 3N pueden diferir en mayúsculas; conservar tras revisión visual."
+        },
+        {
+          "fragmento": "trazo",
+          "nota": "Hay un trazo gris cubierto por corrección roja antes de «es»; podría ser una flecha, no se completa."
+        },
+        {
+          "fragmento": "orden 1",
+          "nota": "Se conserva 1 aunque esté rodeado en rojo: no se corrige la respuesta matemática."
+        }
+      ]
+    },
+    {
+      "region_id": "7c6e9efb6a544eb6916ab29f1f231ca9",
+      "examen_id": "EX_0003",
+      "pagina_original": 14,
+      "pagina_en_examen": 4,
+      "tipo": "respuesta",
+      "pregunta_id": "P3",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        0,
+        834,
+        1614,
+        1173
+      ],
+      "recorte": "recortes/estudiantes/7c6e9efb6a544eb6916ab29f1f231ca9.png",
+      "imagen_local": "imagenes/7c6e9efb6a544eb6916ab29f1f231ca9.png",
+      "transcripcion": "3) Esta técnica, es utilizada para mejorar el rendimiento de los A.S ya que\nlos puede convertir en deterministas, consiste en \"espiar\" (osea ver\npero sin leer tecnicamente) los próximos k símbolos siguientes al que fue\nleido realmente para asi tener una vista previa de los simbolos proximos\n a ser leidos y tomar decisiones sobre que derivación/reducción hacer.\n• Esta tecnica potencia mucho el rendimiento, siendo los ASA con preanalisis\nlos más poderosos y complejos a la vez.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "A.S",
+          "nota": "Abreviatura leída A.S, sin expandirla por contexto."
+        },
+        {
+          "fragmento": "Tildes",
+          "nota": "Algunas tildes son tenues; revisar «tecnicamente», «leido», «asi», «proximos» y «preanalisis»."
+        },
+        {
+          "fragmento": "derivación/reducción",
+          "nota": "Separador oblicuo tenue; lectura tentativa /."
+        }
+      ]
+    },
+    {
+      "region_id": "8ee6a27423f74d199dfaf197e89841e7",
+      "examen_id": "EX_0001",
+      "pagina_original": 3,
+      "pagina_en_examen": 3,
+      "tipo": "subpregunta",
+      "pregunta_id": "P4",
+      "inciso_id": "b",
+      "orden": 1,
+      "bbox_px": [
+        174,
+        1214,
+        1617,
+        1284
+      ],
+      "recorte": "recortes/estudiantes/8ee6a27423f74d199dfaf197e89841e7.png",
+      "imagen_local": "imagenes/8ee6a27423f74d199dfaf197e89841e7.png",
+      "transcripcion": "b) El alfabeto de Cinta sera: [dudoso: b̅]01101#11011[dudoso: b̅] (las 2 cadenas bien pegadas)",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "b̅",
+          "nota": "Símbolo de blanco representado tentativamente como b̅; revisar ambos extremos."
+        },
+        {
+          "fragmento": "01101#11011",
+          "nota": "Comprobar cada dígito de la cadena; se transcribe la secuencia escrita sin convertirla en conjunto."
+        },
+        {
+          "fragmento": "las 2 cadenas bien pegadas",
+          "nota": "Lectura tentativa de la aclaración apretada al margen derecho."
+        }
+      ]
+    },
+    {
+      "region_id": "09af26d977da432d8be7468558ec619d",
+      "examen_id": "EX_0004",
+      "pagina_original": 20,
+      "pagina_en_examen": 4,
+      "tipo": "subpregunta",
+      "pregunta_id": "P5",
+      "inciso_id": "a",
+      "orden": 1,
+      "bbox_px": [
+        29,
+        1150,
+        1497,
+        1539
+      ],
+      "recorte": "recortes/estudiantes/09af26d977da432d8be7468558ec619d.png",
+      "imagen_local": "imagenes/09af26d977da432d8be7468558ec619d.png",
+      "transcripcion": "5 a) Si podria un ALA cumplir este procedimiento,\nporque la máquina de Turing lee la cadena y mueve\nlos cabezales de izquierda a derecha o viceversa, o\npuede parar o no hacer nada (N), pero el cabezal\nnunca va a leer los [dudoso: b̅] (blancos) en la MT, por lo que no se\nextiende y puede estar acotada por [dudoso: ⊢ ; ⊣]",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "ALA",
+          "nota": "Abreviatura leída ALA. No se expande ni se corrige."
+        },
+        {
+          "fragmento": "b̅",
+          "nota": "Lectura tentativa del símbolo de blanco."
+        },
+        {
+          "fragmento": "⊢ ; ⊣",
+          "nota": "Últimos signos leídos tentativamente como delimitadores de cinta, con separador parecido a punto y coma. Revisar su forma y orientación."
+        },
+        {
+          "fragmento": "Si podria",
+          "nota": "Tildes no inequívocas; revisar sin corregir la afirmación del estudiante."
+        }
+      ]
+    },
+    {
+      "region_id": "026a987f0ec74f9aba119a3c1c63d29f",
+      "examen_id": "EX_0002",
+      "pagina_original": 8,
+      "pagina_en_examen": 4,
+      "tipo": "subpregunta",
+      "pregunta_id": "P6",
+      "inciso_id": "a",
+      "orden": 1,
+      "bbox_px": [
+        45,
+        816,
+        1379,
+        1030
+      ],
+      "recorte": "recortes/estudiantes/026a987f0ec74f9aba119a3c1c63d29f.png",
+      "imagen_local": "imagenes/026a987f0ec74f9aba119a3c1c63d29f.png",
+      "transcripcion": "6) a- Una gramática con atributos es una gramática independiente del\ncontexto a la que se le han agregado atributos, un conj. de reglas\nsemánticas y comportamiento",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "comportamiento",
+          "nota": "Texto gris rodeado por una corrección roja; se conserva la palabra del estudiante sin reemplazarla por el comentario docente."
+        },
+        {
+          "fragmento": "reglas",
+          "nota": "Última palabra de la segunda línea cercana al borde; lectura probable «reglas»."
+        }
+      ]
+    },
+    {
+      "region_id": "27a8554764d44c74a6eac98f36ff5c06",
+      "examen_id": "EX_0001",
+      "pagina_original": 3,
+      "pagina_en_examen": 3,
+      "tipo": "subpregunta",
+      "pregunta_id": "P1",
+      "inciso_id": "a",
+      "orden": 1,
+      "bbox_px": [
+        185,
+        396,
+        1179,
+        466
+      ],
+      "recorte": "recortes/estudiantes/27a8554764d44c74a6eac98f36ff5c06.png",
+      "imagen_local": "imagenes/27a8554764d44c74a6eac98f36ff5c06.png",
+      "transcripcion": "a) Puede referirse al Automata con Pila (AP)",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "a)",
+          "nota": "Marcador de inciso parcialmente cortado en el margen izquierdo; lectura tentativa a)."
+        },
+        {
+          "fragmento": "Automata",
+          "nota": "No se distingue tilde; se conserva así."
+        }
+      ]
+    },
+    {
+      "region_id": "e6a74dc70dc541c6a7b483c57360d75d",
+      "examen_id": "EX_0005",
+      "pagina_original": 27,
+      "pagina_en_examen": 5,
+      "tipo": "subpregunta",
+      "pregunta_id": "P5",
+      "inciso_id": "e",
+      "orden": 1,
+      "bbox_px": [
+        232,
+        858,
+        1603,
+        1070
+      ],
+      "recorte": "recortes/estudiantes/e6a74dc70dc541c6a7b483c57360d75d.png",
+      "imagen_local": "imagenes/e6a74dc70dc541c6a7b483c57360d75d.png",
+      "transcripcion": "e) {a, b, 0, 1, [dudoso: b̅]} → Γ = Alfabeto de simbolos de cinta\n{S, Q} → A = subconjunto de Estados de Aceptación, A ⊆ Q",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "b̅",
+          "nota": "Quinto elemento del conjunto: lectura tentativa del símbolo de blanco. El cuarto se lee 1."
+        },
+        {
+          "fragmento": "subconjunto",
+          "nota": "El comienzo «sub» está cruzado por rojo; se incluye el texto azul subyacente."
+        },
+        {
+          "fragmento": "A ⊆ Q",
+          "nota": "Revisar si el símbolo incluye la barra inferior de ⊆ o si corresponde a ∈; no se decide por corrección matemática."
+        },
+        {
+          "fragmento": "S, Q",
+          "nota": "Primera letra del segundo conjunto parece S, pero requiere revisión; no se sustituye por un símbolo esperado por teoría."
+        }
+      ]
+    }
+  ]
+}
