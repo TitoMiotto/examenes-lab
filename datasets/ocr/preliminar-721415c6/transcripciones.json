@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "lote_id_anonimo": "721415c66aef4aec943cf543133a9d86",
+  "exportacion_id": "b62febd1e4bf4f86b68734cd2cecad40",
+  "alcance": "Solo seis recortes adjuntos; texto de estudiantes. Anotaciones docentes excluidas.",
+  "convenciones": {
+    "ilegible": "No se propone lectura.",
+    "dudoso": "Lectura tentativa que requiere revisión.",
+    "diagramas": "Linealizados; no son equivalencia exacta de disposición visual.",
+    "validacion": "Todas las transcripciones requieren revisión humana antes de usarlas como referencia validada."
+  },
+  "regiones": [
+    {
+      "region_id": "cdb17d4124a5402e82f852f146306d89",
+      "examen_id": "EX_0001",
+      "pagina_original": 3,
+      "pagina_en_examen": 3,
+      "tipo": "respuesta",
+      "pregunta_id": "P1",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        146,
+        202,
+        1636,
+        1209
+      ],
+      "recorte": "recortes/estudiantes/cdb17d4124a5402e82f852f146306d89.png",
+      "imagen_local": "imagenes/cdb17d4124a5402e82f852f146306d89.png",
+      "transcripcion": "1) a) Se Trata de un autómata Con Pila No determinista\nb) La traduccion es:\nδ(q₃, λ, A) = (q₇, BB)\nA := BB\nc) q₃ —[λ, A/BB]→ q₇\nd) Seria no determinista, Ya que al leer el Símbolo de pila “A” Voy a Tener\n2 opciones de derivación “BB” con λ y “A” con la entrada de “a”\ne) (q₃, aba, AAA#)\nq₃: estado\naba: cadena a ser leida\n[ilegible: notación debajo de «ser leida»]\nAAA#: lo que Se encuentra en la pila\n[ilegible: expresión de pertenencia debajo de «pila»]\n#: simbolo fin de Pila",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "δ",
+          "nota": "El símbolo inicial de la función es tenue; lectura tentativa δ."
+        },
+        {
+          "fragmento": "A := BB",
+          "nota": "Comprobar autoría: inscripción negra rodeada en rojo; se conserva provisionalmente como texto del estudiante."
+        },
+        {
+          "fragmento": "No determinista",
+          "nota": "Texto negro rodeado por el docente; se conserva el texto negro."
+        },
+        {
+          "fragmento": "e)",
+          "nota": "Diagrama espacial convertido a pares etiqueta/explicación. Revisar las dos expresiones inferiores, parcialmente ilegibles."
+        }
+      ]
+    },
+    {
+      "region_id": "e2689d8163c949cea93bddb64a80a544",
+      "examen_id": "EX_0004",
+      "pagina_original": 21,
+      "pagina_en_examen": 3,
+      "tipo": "respuesta",
+      "pregunta_id": "P1",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        177,
+        257,
+        1648,
+        1687
+      ],
+      "recorte": "recortes/estudiantes/e2689d8163c949cea93bddb64a80a544.png",
+      "imagen_local": "imagenes/e2689d8163c949cea93bddb64a80a544.png",
+      "transcripcion": "1) a) se refiere a un Automata Pila\nb) f(q₃, λ, [dudoso: Aλ]) = (q₇, BB, [dudoso: Aλ])\nc) q₃ —[λ, A BB]→ q₇\nd) Si el movimiento (q₃, aba, AAA#) ⊢ (q₇, ba, AAA#)\nes válido la máquina sigue siendo determinista porque\npara ser No determinista debería cumplirse que para\nuna misma entrada se pueda definir dos o mas posibles\ntransiciones y realizar diferentes acciones.\nEn este caso son entradas distintas,\n(q₃, aba, AAA#) ⊢ (q₇, aba, BBAA#) no lee nada y apila\n y (q₃, aba, AAA#) ⊢ (q₇, ba, AAA#) lee el simbolo ‘a’\ny no apila.\ne) q₃: estado actual\naba: cadena a leer\nAAA#: contenido de la pila",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "b)",
+          "nota": "Los símbolos que siguen a A, rodeados por correcciones rojas, no son inequívocos. No se eliminan los componentes incorrectos de la fórmula."
+        },
+        {
+          "fragmento": "c)",
+          "nota": "No se distingue con seguridad un separador entre A y BB; se mantiene un espacio."
+        },
+        {
+          "fragmento": "d)",
+          "nota": "Comprobar índices de estados y orientación exacta del símbolo de movimiento. Se representa como ⊢ sin corregir el razonamiento."
+        }
+      ]
+    },
+    {
+      "region_id": "f81a64f8d20f4baa868b6890c4d6e18f",
+      "examen_id": "EX_0002",
+      "pagina_original": 11,
+      "pagina_en_examen": 5,
+      "tipo": "subpregunta",
+      "pregunta_id": "P6",
+      "inciso_id": "b",
+      "orden": 1,
+      "bbox_px": [
+        218,
+        265,
+        1628,
+        507
+      ],
+      "recorte": "recortes/estudiantes/f81a64f8d20f4baa868b6890c4d6e18f.png",
+      "imagen_local": "imagenes/f81a64f8d20f4baa868b6890c4d6e18f.png",
+      "transcripcion": "Se utiliza para especificar las gramáticas de los lenguajes de progra-\nmación comerciales.\n\nAdemás sirven para hacer un análisis semántico guiado por la\nsintaxis de las gramáticas del lenguaje.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "guiado",
+          "nota": "Lectura probable de palabra manuscrita; revisar contra la imagen."
+        },
+        {
+          "fragmento": "Inicio",
+          "nota": "Se omite el marcador de inciso de color verde por posible autoría docente; revisar si debe formar parte del objetivo OCR."
+        }
+      ]
+    },
+    {
+      "region_id": "282bc2b6bf044fe689e36bcf7cbd7d2e",
+      "examen_id": "EX_0002",
+      "pagina_original": 9,
+      "pagina_en_examen": 3,
+      "tipo": "respuesta",
+      "pregunta_id": "P3",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        181,
+        1086,
+        1648,
+        1469
+      ],
+      "recorte": "recortes/estudiantes/282bc2b6bf044fe689e36bcf7cbd7d2e.png",
+      "imagen_local": "imagenes/282bc2b6bf044fe689e36bcf7cbd7d2e.png",
+      "transcripcion": "El preanálisis es una técnica de programación que se utiliza para que un\n autómata con pila no determinista se comporte de manera determinística.\nEsto implica conocer los próximos k símbolos a ser leídos por el autómata.\npara poder predecir cual de las posibles producciones pueden llegar\n a conducir a la aceptación.\n\nEn otras palabras, consiste en ver dos o más símbolos (leer, preana-\nlizar) para determinar cual es la producción que podría utilizarse\nfrente a alternativas no determinísticas.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "consiste",
+          "nota": "Palabra sobrescrita; lectura tentativa «consiste»."
+        },
+        {
+          "fragmento": "Inicio",
+          "nota": "Se omite el número 3 verde por posible autoría docente."
+        },
+        {
+          "fragmento": "Acentos",
+          "nota": "Revisar las tildes en «leídos», «producción» y «podría»: trazos pequeños y tenues."
+        }
+      ]
+    },
+    {
+      "region_id": "5a8caee959fb4099a2a51cc5152281bb",
+      "examen_id": "EX_0004",
+      "pagina_original": 24,
+      "pagina_en_examen": 6,
+      "tipo": "respuesta",
+      "pregunta_id": "P6",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        65,
+        632,
+        1591,
+        2104
+      ],
+      "recorte": "recortes/estudiantes/5a8caee959fb4099a2a51cc5152281bb.png",
+      "imagen_local": "imagenes/5a8caee959fb4099a2a51cc5152281bb.png",
+      "transcripcion": "6) a) Una gramática con atributos es una gramática en la\nque le asignan propiedades o atributos a los simbolos\nterminales y no terminales, tambien se agregan restricciones\n a las producciones y condiciones a las producciones.\nGA = (Σₜ, Σₙ, S, P, A, R, C)    S: el axioma.\nP: conjunto de producciones.\nA: conjunto de atributos de los Σₜ y Σₙ\nR: conjunto de restricciones de P\nC: conjunto de condiciones de P\n\nb) se utiliza para definir semanticas de los lenguajes.\n\nc) Un atributo es una propiedad [inserción: o más] que se le designa a los\nsimbolos (Terminales y No terminales), son caracteristicas que\n deben cumplir los simbolos.\n\nd) Se clasifican en\nEstáticos: porque se calculan en tiempo de compilación\nDinámicos: porque se calculan durante la ejecución",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "GA",
+          "nota": "Los paréntesis rojos son del docente y se excluyen; los paréntesis de la transcripción solo linealizan la tupla."
+        },
+        {
+          "fragmento": "c)",
+          "nota": "Inserción superior «o más»; confirmar el punto de inserción. Hay sobrescritura al final de «propiedad»."
+        },
+        {
+          "fragmento": "b)",
+          "nota": "Lectura tentativa «semanticas»; no se agrega la continuación roja del docente."
+        }
+      ]
+    },
+    {
+      "region_id": "2f4973e1cc694034812703ba2b59fef9",
+      "examen_id": "EX_0004",
+      "pagina_original": 22,
+      "pagina_en_examen": 4,
+      "tipo": "respuesta",
+      "pregunta_id": "P4",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        24,
+        520,
+        1601,
+        2259
+      ],
+      "recorte": "recortes/estudiantes/2f4973e1cc694034812703ba2b59fef9.png",
+      "imagen_local": "imagenes/2f4973e1cc694034812703ba2b59fef9.png",
+      "transcripcion": "4) α#β → α#β=x\nEj [dudoso: b̅] 0110#11011[dudoso: b̅] → [dudoso: b̅]0110#11011=10110[dudoso: b̅]\n\na) α ∈ Σ* con Σ = {0, 1, #} alfabeto de entrada\n\nb) β ∈ Γ*    Γ = Σ ∪ {[dudoso: b̅]} ∪ Ω    alfabeto de la cinta.\nΩ es un conjunto de simbolos auxiliares y a priori\n[ilegible: inicio de línea] tiene el simbolo = y podria tener mas simbolos\nauxiliares si es necesario para resolver la operacion.\n[dudoso: b̅] es blanco\nΣ el alfabeto de entrada.\n\nc) Sea n = |α|, α [ilegible] cadena a leer\nα = β#γ    donde m = |β| = |γ|\nentonces n = 2m + 1\nLa cantidad de celdas que se ocupará para escribir\nel resultado de la [dudoso: ejecución] de la operacion es 1 por el\nsimbolo =, más la longitud de la cadena resultado (σ)\nesta longitud ocupará el mismo espacio que β y γ\n=> m = |σ| = |β| = |γ|\nEntonces el espacio ocupado total en la cinta sera.\n2m + 1 + 1 + m    n = 2m + 1 => m = (n−1)/2\npor lo cual E(n) = 2((n−1)/2) + 1 + 1 + (n−1)/2 = n + n/2 + 1 = 3n/2 + 1",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "dudas": [
+        {
+          "fragmento": "Encabezado",
+          "nota": "Fórmula y ejemplo escritos a lápiz: revisar caracteres, especialmente blanco, cadena resultado y signo igual."
+        },
+        {
+          "fragmento": "b̅",
+          "nota": "Representación tentativa del símbolo manuscrito de blanco; podría ser otra notación. No se normaliza a un símbolo distinto."
+        },
+        {
+          "fragmento": "α, β, γ, σ",
+          "nota": "Letras griegas tentativas; algunas se parecen entre sí. Revisar todas las fórmulas."
+        },
+        {
+          "fragmento": "c)",
+          "nota": "Texto tapado por material claro. No se completa por contexto."
+        },
+        {
+          "fragmento": "E(n)",
+          "nota": "Se conserva la igualdad final tal como se lee, sin corregir aritmética. Revisar constantes y fracciones."
+        }
+      ]
+    }
+  ]
+}
