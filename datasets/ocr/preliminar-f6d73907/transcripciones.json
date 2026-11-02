@@ -2,7 +2,7 @@
   "version": 1,
   "lote_id_anonimo": "f6d73907297243a49882cf4d4b8bc104",
   "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882",
-  "alcance": "Solo nueve recortes adjuntos; texto de estudiantes. Anotaciones docentes excluidas.",
+  "alcance": "16 regiones únicas de estudiantes recibidas en dos envíos del mismo lote; anotaciones docentes excluidas. exportacion_id en cada región identifica el manifiesto de origen; el campo superior conserva la primera exportación.",
   "convenciones": {
     "ilegible": "No se propone lectura.",
     "dudoso": "Lectura tentativa que requiere revisión.",
@@ -39,7 +39,8 @@
           "fragmento": "descubrio",
           "nota": "No se distingue con seguridad una tilde. No se añade."
         }
-      ]
+      ],
+      "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882"
     },
     {
       "region_id": "1f87f53e1e4d4ac384cf3c0da3dacac4",
@@ -70,7 +71,8 @@
           "fragmento": "resultado",
           "nota": "Revisar el primer «resultado», cuyo trazo puede parecer «resultodo»."
         }
-      ]
+      ],
+      "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882"
     },
     {
       "region_id": "5aaf62f7cdc64f81949dad11794684f6",
@@ -105,7 +107,8 @@
           "fragmento": "orden 1",
           "nota": "Se conserva 1 aunque esté rodeado en rojo: no se corrige la respuesta matemática."
         }
-      ]
+      ],
+      "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882"
     },
     {
       "region_id": "7c6e9efb6a544eb6916ab29f1f231ca9",
@@ -140,7 +143,8 @@
           "fragmento": "derivación/reducción",
           "nota": "Separador oblicuo tenue; lectura tentativa /."
         }
-      ]
+      ],
+      "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882"
     },
     {
       "region_id": "8ee6a27423f74d199dfaf197e89841e7",
@@ -175,7 +179,8 @@
           "fragmento": "las 2 cadenas bien pegadas",
           "nota": "Lectura tentativa de la aclaración apretada al margen derecho."
         }
-      ]
+      ],
+      "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882"
     },
     {
       "region_id": "09af26d977da432d8be7468558ec619d",
@@ -214,7 +219,8 @@
           "fragmento": "Si podria",
           "nota": "Tildes no inequívocas; revisar sin corregir la afirmación del estudiante."
         }
-      ]
+      ],
+      "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882"
     },
     {
       "region_id": "026a987f0ec74f9aba119a3c1c63d29f",
@@ -245,7 +251,8 @@
           "fragmento": "reglas",
           "nota": "Última palabra de la segunda línea cercana al borde; lectura probable «reglas»."
         }
-      ]
+      ],
+      "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882"
     },
     {
       "region_id": "27a8554764d44c74a6eac98f36ff5c06",
@@ -276,7 +283,8 @@
           "fragmento": "Automata",
           "nota": "No se distingue tilde; se conserva así."
         }
-      ]
+      ],
+      "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882"
     },
     {
       "region_id": "e6a74dc70dc541c6a7b483c57360d75d",
@@ -315,7 +323,288 @@
           "fragmento": "S, Q",
           "nota": "Primera letra del segundo conjunto parece S, pero requiere revisión; no se sustituye por un símbolo esperado por teoría."
         }
+      ],
+      "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882"
+    },
+    {
+      "region_id": "cdbc0df40a5b45deb55bf6a8078d987e",
+      "examen_id": "EX_0005",
+      "pagina_original": 26,
+      "pagina_en_examen": 4,
+      "tipo": "respuesta",
+      "pregunta_id": "P3",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        37,
+        166,
+        1572,
+        744
+      ],
+      "recorte": "recortes/estudiantes/cdbc0df40a5b45deb55bf6a8078d987e.png",
+      "imagen_local": "imagenes/cdbc0df40a5b45deb55bf6a8078d987e.png",
+      "transcripcion": "3) La Tecnica de preanálisis consiste en conocer anticipadamente\nk simbolos (posteriores al simbolo actual leido por el AP), esto\nle permite al analizador sintactico mejorar la toma de decisiones al\nmomento de desarrollar el árbol de análisis sintáctico, reduciendo el\nfactor de ramificación del mismo.\n\nBasicamente es una Tecnica que busca resolver un problema esen-\ncialmente no determinista en forma determinista ya que al “espiar”\nlos proximos simbolos de la pila, puede mejorar la toma de decisiones\ny reducir la cantidad de “caminos” posibles.\n\nEl objetivo es mejorar la eficiencia del analizador sintáctico, reducien-\ndo el uso de tecnicas como el backtracking.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "512aca5b76394e1aacfe5e8c61d88439",
+      "dudas": [
+        {
+          "fragmento": "k",
+          "nota": "Letra que indica cantidad de símbolos: lectura tentativa k."
+        },
+        {
+          "fragmento": "factor",
+          "nota": "Inicio de palabra sobrescrito; lectura tentativa «factor»."
+        },
+        {
+          "fragmento": "Tildes",
+          "nota": "Revisar tildes tenues, especialmente «Tecnica», «Basicamente», «simbolos» y «leido»; no se agregan por contexto."
+        },
+        {
+          "fragmento": "pila",
+          "nota": "Se conserva «pila», sin corregir el contenido de la respuesta."
+        }
+      ]
+    },
+    {
+      "region_id": "03c53eb5ec3e4840901e06e407f3b096",
+      "examen_id": "EX_0004",
+      "pagina_original": 19,
+      "pagina_en_examen": 3,
+      "tipo": "respuesta",
+      "pregunta_id": "P3",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        142,
+        1597,
+        1570,
+        2122
+      ],
+      "recorte": "recortes/estudiantes/03c53eb5ec3e4840901e06e407f3b096.png",
+      "imagen_local": "imagenes/03c53eb5ec3e4840901e06e407f3b096.png",
+      "transcripcion": "3) Tecnica Preanálisis = Esta técnica consiste en\nespiar o visualizar el contenido de la pila, cuando\nestamos frente a un Automata pila no determinista\nse da en estos autómatas ya que pueden haber varias\nconfiguraciones para un cierto símbolo de entrada,\nesto me ayuda a ver cual de estas configuraciones\nes más conveniente según el símbolo de entrada",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "512aca5b76394e1aacfe5e8c61d88439",
+      "dudas": [
+        {
+          "fragmento": "Tecnica",
+          "nota": "Revisar si hay tilde en la primera palabra."
+        },
+        {
+          "fragmento": "Automata",
+          "nota": "No se distingue tilde en esta aparición; no se normaliza."
+        },
+        {
+          "fragmento": "cual",
+          "nota": "Se conserva sin tilde según la lectura visual; revisar."
+        }
+      ]
+    },
+    {
+      "region_id": "76b4f920b0be460890856a7194e6b208",
+      "examen_id": "EX_0001",
+      "pagina_original": 3,
+      "pagina_en_examen": 3,
+      "tipo": "respuesta",
+      "pregunta_id": "P2",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        88,
+        881,
+        1599,
+        1126
+      ],
+      "recorte": "recortes/estudiantes/76b4f920b0be460890856a7194e6b208.png",
+      "imagen_local": "imagenes/76b4f920b0be460890856a7194e6b208.png",
+      "transcripcion": "2) Para que un problema sea intratable tiene que ser de la clase NP\n(Polinomio no deterministico) y para que sea tratable el problema tiene\nque ser de la clase P (Polinomial)",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "512aca5b76394e1aacfe5e8c61d88439",
+      "dudas": [
+        {
+          "fragmento": "Polinomio",
+          "nota": "Lectura probable «Polinomio»; revisar el final de la palabra."
+        },
+        {
+          "fragmento": "deterministico",
+          "nota": "No se distingue tilde; se conserva el término sin corregirlo."
+        },
+        {
+          "fragmento": "NP y P",
+          "nota": "Se conserva la afirmación del estudiante; no se incorpora la observación roja del docente."
+        }
+      ]
+    },
+    {
+      "region_id": "d7e13ac885db48ccb4d60438a1dcad7d",
+      "examen_id": "EX_0001",
+      "pagina_original": 3,
+      "pagina_en_examen": 3,
+      "tipo": "subpregunta",
+      "pregunta_id": "P5",
+      "inciso_id": "e",
+      "orden": 1,
+      "bbox_px": [
+        169,
+        1597,
+        1641,
+        1789
+      ],
+      "recorte": "recortes/estudiantes/d7e13ac885db48ccb4d60438a1dcad7d.png",
+      "imagen_local": "imagenes/d7e13ac885db48ccb4d60438a1dcad7d.png",
+      "transcripcion": "[ilegible: marcador de inciso recortado] El conjunto {a, b, 0, 1, [dudoso: b̅]} representa los simbolos terminales utilizados\nen la cadena y el conjunto {S, Q} representan los estados de\naceptación para aceptar la cadena una vez que llegue a uno de ellos.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "512aca5b76394e1aacfe5e8c61d88439",
+      "dudas": [
+        {
+          "fragmento": "Marcador",
+          "nota": "Borde izquierdo cortado: el inciso e proviene del manifiesto, no se reconstruye en el texto."
+        },
+        {
+          "fragmento": "b̅",
+          "nota": "Último elemento del conjunto: símbolo de blanco de lectura tentativa."
+        },
+        {
+          "fragmento": "S, Q",
+          "nota": "Revisar la primera letra del segundo conjunto; parece S."
+        },
+        {
+          "fragmento": "terminales",
+          "nota": "Se conserva la palabra azul rodeada en rojo; no se sustituye por una respuesta teórica."
+        }
+      ]
+    },
+    {
+      "region_id": "f1b7b4926a51454795e0b50da86e3fb1",
+      "examen_id": "EX_0005",
+      "pagina_original": 27,
+      "pagina_en_examen": 5,
+      "tipo": "subpregunta",
+      "pregunta_id": "P6",
+      "inciso_id": "c",
+      "orden": 1,
+      "bbox_px": [
+        230,
+        2180,
+        1576,
+        2334
+      ],
+      "recorte": "recortes/estudiantes/f1b7b4926a51454795e0b50da86e3fb1.png",
+      "imagen_local": "imagenes/f1b7b4926a51454795e0b50da86e3fb1.png",
+      "transcripcion": "c) Atributo → Conjunto de Propiedades variables asignables a los\nsimbolos de la gramatica. → Σ = Σₜ ∪ Σₙ",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "512aca5b76394e1aacfe5e8c61d88439",
+      "dudas": [
+        {
+          "fragmento": "Σ = Σₜ ∪ Σₙ",
+          "nota": "Notación leída tentativamente; comprobar si los signos iniciales son Σ y la unión ∪."
+        },
+        {
+          "fragmento": "asignables",
+          "nota": "Lectura probable; revisar el tramo bajo la corrección roja."
+        },
+        {
+          "fragmento": "Tildes",
+          "nota": "No se distinguen tildes en «simbolos» y «gramatica»."
+        }
+      ]
+    },
+    {
+      "region_id": "f462da6dcdcc482195f35c18666b91ef",
+      "examen_id": "EX_0005",
+      "pagina_original": 26,
+      "pagina_en_examen": 4,
+      "tipo": "respuesta",
+      "pregunta_id": "P5",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        63,
+        1407,
+        1587,
+        2195
+      ],
+      "recorte": "recortes/estudiantes/f462da6dcdcc482195f35c18666b91ef.png",
+      "imagen_local": "imagenes/f462da6dcdcc482195f35c18666b91ef.png",
+      "transcripcion": "5) MT = ({a, b}, {a, b, 0, 1, [dudoso: b̅]}, {P, Q, R, S, T}, P, {S, Q}, F, [dudoso: b̅])\nα = [dudoso: b̅]abaaca[dudoso: b̅]    cant movimientos = 35\n↓\nβ = [dudoso: b̅]aaacba[dudoso: b̅] → [dudoso: ⑥]\n\na) Si, ya que como se explica que la MT NO USO celdas extras\npara realizar el procedimiento, [dudoso: entonces] un ALA puede realizar el\nmismo procedimiento, porque la unica diferencia entre un ALA y una\nMT es que el ALA tiene acotada su cinta.\n\nb) NO, ya que un AFD no tiene la capacidad de grabar sobre la\ncinta. y aunque se considere a un AFDₜ (Traductor) el cual\nsi puede grabar sobre su cinta, aun asi no podria ya que\nel AFDₜ no puede mover su cabezal (se mueve unicamente a la\nderecha) por lo que no podria hacer los 35 movimientos que\nfueron necesarios para el procedimiento.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "512aca5b76394e1aacfe5e8c61d88439",
+      "dudas": [
+        {
+          "fragmento": "Encabezado",
+          "nota": "Tupla linealizada sin corregir sus elementos. El tercer conjunto se lee {P, Q, R, S, T}; confirmar letras y orden."
+        },
+        {
+          "fragmento": "b̅",
+          "nota": "Símbolo de blanco tentativo en la tupla y los extremos de ambas cadenas."
+        },
+        {
+          "fragmento": "abaaca, aaacba",
+          "nota": "Lecturas tentativas de las cadenas negras, verificar cada carácter; no se infieren a partir del procedimiento."
+        },
+        {
+          "fragmento": "α, β",
+          "nota": "Letras griegas tentativas usadas como etiquetas; revisar la primera."
+        },
+        {
+          "fragmento": "⑥",
+          "nota": "Signo final azul encerrado en círculos: parece 6, pero no es inequívoco. No se interpreta como resultado."
+        },
+        {
+          "fragmento": "entonces",
+          "nota": "Palabra sobrescrita en a); lectura tentativa, no se completa el tachado."
+        },
+        {
+          "fragmento": "AFDₜ",
+          "nota": "Subíndice leído T/t; se representa ₜ provisionalmente."
+        },
+        {
+          "fragmento": "Tildes",
+          "nota": "Revisar tildes tenues en el texto sin normalizar ortografía."
+        }
+      ]
+    },
+    {
+      "region_id": "fd22da66263d4477897d62a19c38f4c4",
+      "examen_id": "EX_0004",
+      "pagina_original": 19,
+      "pagina_en_examen": 3,
+      "tipo": "subpregunta",
+      "pregunta_id": "P1",
+      "inciso_id": "d",
+      "orden": 2,
+      "bbox_px": [
+        151,
+        692,
+        1551,
+        914
+      ],
+      "recorte": "recortes/estudiantes/fd22da66263d4477897d62a19c38f4c4.png",
+      "imagen_local": "imagenes/fd22da66263d4477897d62a19c38f4c4.png",
+      "transcripcion": "d) la máquina va a resultar determinista ya que\nhay una configuración que se puede utilizar cuando\nse lee “a”.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "512aca5b76394e1aacfe5e8c61d88439",
+      "dudas": [
+        {
+          "fragmento": "determinista",
+          "nota": "Lectura probable del término manuscrito; no se corrige la afirmación."
+        },
+        {
+          "fragmento": "orden 2",
+          "nota": "El manifiesto lo identifica como segundo fragmento de P1.d; se conserva como región independiente, sin inventar el fragmento anterior."
+        }
       ]
     }
+  ],
+  "exportaciones_id": [
+    "dfcf8cc76d514d518254c2e5fea31882",
+    "512aca5b76394e1aacfe5e8c61d88439"
   ]
 }
