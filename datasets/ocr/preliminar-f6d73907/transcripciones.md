@@ -144,4 +144,3 @@ Dudas para revisión:
 - subconjunto: El comienzo «sub» está cruzado por rojo; se incluye el texto azul subyacente.
 - A ⊆ Q: Revisar si el símbolo incluye la barra inferior de ⊆ o si corresponde a ∈; no se decide por corrección matemática.
 - S, Q: Primera letra del segundo conjunto parece S, pero requiere revisión; no se sustituye por un símbolo esperado por teoría.
-
