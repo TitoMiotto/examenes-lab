@@ -1,6 +1,6 @@
 # Transcripciones preliminares para evaluación OCR
 
-16 regiones únicas asociadas a los manifiestos de dos envíos del mismo lote. Todos pendientes de revisión humana. Se excluyen las anotaciones docentes y no se corrigen respuestas. Los corchetes son marcas editoriales, no texto manuscrito. Saltos de línea aproximados.
+25 regiones únicas asociadas a los manifiestos de tres envíos del mismo lote. Dos son subrecortes de otra región incluida y no constituyen muestras independientes. Todos pendientes de revisión humana. Se excluyen las anotaciones docentes y no se corrigen respuestas. Los corchetes son marcas editoriales, no texto manuscrito. Saltos de línea aproximados.
 
 ## EX_0005 · P5 · inciso f
 
@@ -288,3 +288,151 @@ Dudas para revisión:
 
 - determinista: Lectura probable del término manuscrito; no se corrige la afirmación.
 - orden 2: El manifiesto lo identifica como segundo fragmento de P1.d; se conserva como región independiente, sin inventar el fragmento anterior.
+
+## EX_0003 · P1 · inciso d
+
+Región: `6c7f2738ce564c6e8e5a2736631f5f3c`. Página original: 13. Orden: 1. Exportación: `ba1c6f364f6041bc8e532cf49a6243a7`.
+
+```text
+d) El AP será NO DETERMINISTA, ya que para una misma configuración inst.
+tiene mas de 1 transicion posible.
+```
+
+Dudas para revisión:
+
+- transicion: Texto azul tachado en rojo; se conserva la palabra original sin sustituirla por «configuración», que es del docente.
+- inst.: Abreviatura al borde derecho; lectura tentativa «inst.».
+
+## EX_0005 · P5 · inciso b
+
+Región: `69b556ddf53a4de5984ba5fe872e8a2e`. Página original: 26. Orden: 1. Exportación: `ba1c6f364f6041bc8e532cf49a6243a7`.
+
+```text
+b) NO, ya que un AFD no tiene la capacidad de grabar sobre la
+cinta. y aunque se considere a un AFDₜ (Traductor) el cual
+si puede grabar sobre su cinta, aun asi no podria ya que
+el AFDₜ no puede mover su cabezal (se mueve unicamente a la
+derecha) por lo que no podria hacer los 35 movimientos que
+fueron necesarios para el procedimiento.
+```
+
+Dudas para revisión:
+
+- AFDₜ: Subíndice T/t tentativo; no se expande la abreviatura.
+- Solapamiento: Este recorte reproduce el apartado b) de la región f462da6dcdcc482195f35c18666b91ef; no es una respuesta independiente.
+
+## EX_0002 · P5 · inciso c
+
+Región: `38b0cfcb67784ad39b9326514b2d3213`. Página original: 7. Orden: 1. Exportación: `ba1c6f364f6041bc8e532cf49a6243a7`.
+
+```text
+c- Sí, ya que una MTU puede resolver cualquier procedimiento codificado
+que recibe de cualquier otra MT.
+```
+
+Dudas para revisión:
+
+- codificado: Lectura probable de la última palabra de la primera línea; revisar contra el original.
+- Sí: La tilde parece visible; confirmar.
+
+## EX_0002 · P6 · inciso d
+
+Región: `04edc9f189c04c239c4248a81c3a984d`. Página original: 8. Orden: 1. Exportación: `ba1c6f364f6041bc8e532cf49a6243a7`.
+
+```text
+d- Se clasifican en:
+• Estáticos → en tiempo de compilación
+• Dinámicos → en tiempo de ejecución
+```
+
+Dudas para revisión:
+
+- Dinámicos: Grafía tenue; lectura probable «Dinámicos».
+- Tildes: Revisar las tildes pequeñas en los cuatro términos principales; no se consideran validadas.
+
+## EX_0003 · P2 · inciso —
+
+Región: `2bc1319c84fd4621b690af4521d79e8a`. Página original: 13. Orden: 1. Exportación: `ba1c6f364f6041bc8e532cf49a6243a7`.
+
+```text
+2) • Problema tratable (P) = Es aquel que puede ser resuelto en tiempo de orden
+polinomico por una Maq. de Turing determinista.
+• Problema Intratable (NP) = Es aquel que puede ser resuelto en tiempo de orden
+polinomico por una M.T NO DETERMINISTA, la cual en la practica
+con problemas de dimensiones grandes se producen tantas bifurcaciones
+[ilegible: fragmento cubierto] lo lleva a tardar cantidades inmensas de tiempo que se
+consideran intratables.
+```
+
+Dudas para revisión:
+
+- Fragmento cubierto: Hay material claro antes de «lo lleva»; no se completa.
+- Tildes: No se distinguen tildes en «polinomico» ni «practica»; revisar sin normalizar.
+- Contenido: No se incorpora el «solo» rojo ni la corrección roja de complejidad temporal; se conserva el razonamiento del estudiante.
+
+## EX_0002 · P5 · inciso e
+
+Región: `8a0aaa25afd04f69ae4bb93b041f4379`. Página original: 8. Orden: 1. Exportación: `ba1c6f364f6041bc8e532cf49a6243a7`.
+
+```text
+e- {a, b, 0, 1, [dudoso: b̅]} = Γ representa el alfabeto de cinta.
+{S, Q} = A representa el conjunto de estados de aceptación.
+```
+
+Dudas para revisión:
+
+- b̅: Último elemento del primer conjunto: símbolo de blanco tentativo.
+- Γ: Letra griega tentativa, muy próxima al inicio de «representa».
+- S, Q: Primera letra del segundo conjunto se lee S; revisar sin sustituir por un símbolo teórico.
+
+## EX_0004 · P1 · inciso b
+
+Región: `4b7f9e4d2fd1474980dd5065a7fa4dca`. Página original: 19. Orden: 1. Exportación: `ba1c6f364f6041bc8e532cf49a6243a7`.
+
+```text
+b) La función debe ser: f(q₃, aba, AAA) = {(q₇, λ)}
+```
+
+Dudas para revisión:
+
+- q₃ y q₇: Índices de estados tentativos; revisar el primero, cuyo trazo es tenue.
+- aba, AAA: Se conservan los argumentos rodeados por correcciones rojas; confirmar cantidad de A y cada carácter de aba.
+- {(q₇, λ)}: Se linealizan los delimitadores de la salida; el borde derecho dificulta distinguir cierre de paréntesis y llave. Revisar λ y cierres, sin corregir la fórmula.
+
+## EX_0002 · P6 · inciso c
+
+Región: `4ef1da6a9bee4dcf9faeb9ba832f31ac`. Página original: 8. Orden: 1. Exportación: `ba1c6f364f6041bc8e532cf49a6243a7`.
+
+```text
+c- Atributo: conjunto de propiedades que se le adjudican a los
+simbolos terminales y no terminales.
+```
+
+Dudas para revisión:
+
+- adjudican: Palabra gris tachada en rojo; lectura tentativa «adjudican». La corrección roja «asignan» queda excluida.
+- simbolos: No se distingue tilde en el recorte; revisar.
+
+## EX_0005 · P5 · inciso a
+
+Región: `0defa2f26e894329aac46c4777a08acb`. Página original: 26. Orden: 1. Exportación: `ba1c6f364f6041bc8e532cf49a6243a7`.
+
+```text
+MT = ({a, b}, {a, b, 0, 1, [dudoso: b̅]}, {P, Q, R, S, T}, P, {S, Q}, F, [dudoso: b̅])
+α = [dudoso: b̅]abaaca[dudoso: b̅]    cant movimientos = 35
+↓
+β = [dudoso: b̅]aaacba[dudoso: b̅] → [dudoso: ⑥]
+
+a) Si, ya que como se explica que la MT NO USO celdas extras
+para realizar el procedimiento, [dudoso: entonces] un ALA puede realizar el
+mismo procedimiento, porque la unica diferencia entre un ALA y una
+MT es que el ALA tiene acotada su cinta.
+```
+
+Dudas para revisión:
+
+- Encabezado: Número de pregunta parcialmente cortado en el margen izquierdo, no se reconstruye.
+- Tupla y cadenas: Símbolo de blanco, etiquetas α/β, letras del conjunto y cadenas negras son lecturas tentativas. No se infiere el resultado por contexto.
+- ⑥: Símbolo azul encerrado en círculos parece 6; lectura dudosa.
+- entonces: Palabra sobrescrita: lectura tentativa.
+- Solapamiento: Reproduce encabezado y apartado a) de f462da6dcdcc482195f35c18666b91ef, no es una respuesta independiente.

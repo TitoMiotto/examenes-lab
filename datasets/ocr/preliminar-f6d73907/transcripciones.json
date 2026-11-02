@@ -2,7 +2,7 @@
   "version": 1,
   "lote_id_anonimo": "f6d73907297243a49882cf4d4b8bc104",
   "exportacion_id": "dfcf8cc76d514d518254c2e5fea31882",
-  "alcance": "16 regiones únicas de estudiantes recibidas en dos envíos del mismo lote; anotaciones docentes excluidas. exportacion_id en cada región identifica el manifiesto de origen; el campo superior conserva la primera exportación.",
+  "alcance": "25 regiones únicas de estudiantes de tres envíos del mismo lote; dos son subrecortes de otra región incluida. Anotaciones docentes excluidas. exportacion_id por región identifica el origen; el campo superior conserva la primera exportación.",
   "convenciones": {
     "ilegible": "No se propone lectura.",
     "dudoso": "Lectura tentativa que requiere revisión.",
@@ -568,7 +568,8 @@
           "fragmento": "Tildes",
           "nota": "Revisar tildes tenues en el texto sin normalizar ortografía."
         }
-      ]
+      ],
+      "grupo_contenido": "f462da6dcdcc482195f35c18666b91ef"
     },
     {
       "region_id": "fd22da66263d4477897d62a19c38f4c4",
@@ -601,10 +602,333 @@
           "nota": "El manifiesto lo identifica como segundo fragmento de P1.d; se conserva como región independiente, sin inventar el fragmento anterior."
         }
       ]
+    },
+    {
+      "region_id": "6c7f2738ce564c6e8e5a2736631f5f3c",
+      "examen_id": "EX_0003",
+      "pagina_original": 13,
+      "pagina_en_examen": 3,
+      "tipo": "subpregunta",
+      "pregunta_id": "P1",
+      "inciso_id": "d",
+      "orden": 1,
+      "bbox_px": [
+        119,
+        522,
+        1604,
+        642
+      ],
+      "recorte": "recortes/estudiantes/6c7f2738ce564c6e8e5a2736631f5f3c.png",
+      "imagen_local": "imagenes/6c7f2738ce564c6e8e5a2736631f5f3c.png",
+      "transcripcion": "d) El AP será NO DETERMINISTA, ya que para una misma configuración inst.\ntiene mas de 1 transicion posible.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "ba1c6f364f6041bc8e532cf49a6243a7",
+      "dudas": [
+        {
+          "fragmento": "transicion",
+          "nota": "Texto azul tachado en rojo; se conserva la palabra original sin sustituirla por «configuración», que es del docente."
+        },
+        {
+          "fragmento": "inst.",
+          "nota": "Abreviatura al borde derecho; lectura tentativa «inst.»."
+        }
+      ]
+    },
+    {
+      "region_id": "69b556ddf53a4de5984ba5fe872e8a2e",
+      "examen_id": "EX_0005",
+      "pagina_original": 26,
+      "pagina_en_examen": 4,
+      "tipo": "subpregunta",
+      "pregunta_id": "P5",
+      "inciso_id": "b",
+      "orden": 1,
+      "bbox_px": [
+        142,
+        1917,
+        1525,
+        2190
+      ],
+      "recorte": "recortes/estudiantes/69b556ddf53a4de5984ba5fe872e8a2e.png",
+      "imagen_local": "imagenes/69b556ddf53a4de5984ba5fe872e8a2e.png",
+      "transcripcion": "b) NO, ya que un AFD no tiene la capacidad de grabar sobre la\ncinta. y aunque se considere a un AFDₜ (Traductor) el cual\nsi puede grabar sobre su cinta, aun asi no podria ya que\nel AFDₜ no puede mover su cabezal (se mueve unicamente a la\nderecha) por lo que no podria hacer los 35 movimientos que\nfueron necesarios para el procedimiento.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "ba1c6f364f6041bc8e532cf49a6243a7",
+      "dudas": [
+        {
+          "fragmento": "AFDₜ",
+          "nota": "Subíndice T/t tentativo; no se expande la abreviatura."
+        },
+        {
+          "fragmento": "Solapamiento",
+          "nota": "Este recorte reproduce el apartado b) de la región f462da6dcdcc482195f35c18666b91ef; no es una respuesta independiente."
+        }
+      ],
+      "solapamiento": {
+        "region_contenedora": "f462da6dcdcc482195f35c18666b91ef",
+        "grupo_contenido": "f462da6dcdcc482195f35c18666b91ef",
+        "muestra_independiente": false
+      }
+    },
+    {
+      "region_id": "38b0cfcb67784ad39b9326514b2d3213",
+      "examen_id": "EX_0002",
+      "pagina_original": 7,
+      "pagina_en_examen": 3,
+      "tipo": "subpregunta",
+      "pregunta_id": "P5",
+      "inciso_id": "c",
+      "orden": 1,
+      "bbox_px": [
+        131,
+        2031,
+        1558,
+        2173
+      ],
+      "recorte": "recortes/estudiantes/38b0cfcb67784ad39b9326514b2d3213.png",
+      "imagen_local": "imagenes/38b0cfcb67784ad39b9326514b2d3213.png",
+      "transcripcion": "c- Sí, ya que una MTU puede resolver cualquier procedimiento codificado\nque recibe de cualquier otra MT.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "ba1c6f364f6041bc8e532cf49a6243a7",
+      "dudas": [
+        {
+          "fragmento": "codificado",
+          "nota": "Lectura probable de la última palabra de la primera línea; revisar contra el original."
+        },
+        {
+          "fragmento": "Sí",
+          "nota": "La tilde parece visible; confirmar."
+        }
+      ]
+    },
+    {
+      "region_id": "04edc9f189c04c239c4248a81c3a984d",
+      "examen_id": "EX_0002",
+      "pagina_original": 8,
+      "pagina_en_examen": 4,
+      "tipo": "subpregunta",
+      "pregunta_id": "P6",
+      "inciso_id": "d",
+      "orden": 1,
+      "bbox_px": [
+        42,
+        1316,
+        861,
+        1535
+      ],
+      "recorte": "recortes/estudiantes/04edc9f189c04c239c4248a81c3a984d.png",
+      "imagen_local": "imagenes/04edc9f189c04c239c4248a81c3a984d.png",
+      "transcripcion": "d- Se clasifican en:\n• Estáticos → en tiempo de compilación\n• Dinámicos → en tiempo de ejecución",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "ba1c6f364f6041bc8e532cf49a6243a7",
+      "dudas": [
+        {
+          "fragmento": "Dinámicos",
+          "nota": "Grafía tenue; lectura probable «Dinámicos»."
+        },
+        {
+          "fragmento": "Tildes",
+          "nota": "Revisar las tildes pequeñas en los cuatro términos principales; no se consideran validadas."
+        }
+      ]
+    },
+    {
+      "region_id": "2bc1319c84fd4621b690af4521d79e8a",
+      "examen_id": "EX_0003",
+      "pagina_original": 13,
+      "pagina_en_examen": 3,
+      "tipo": "respuesta",
+      "pregunta_id": "P2",
+      "inciso_id": null,
+      "orden": 1,
+      "bbox_px": [
+        108,
+        778,
+        1642,
+        1164
+      ],
+      "recorte": "recortes/estudiantes/2bc1319c84fd4621b690af4521d79e8a.png",
+      "imagen_local": "imagenes/2bc1319c84fd4621b690af4521d79e8a.png",
+      "transcripcion": "2) • Problema tratable (P) = Es aquel que puede ser resuelto en tiempo de orden\npolinomico por una Maq. de Turing determinista.\n• Problema Intratable (NP) = Es aquel que puede ser resuelto en tiempo de orden\npolinomico por una M.T NO DETERMINISTA, la cual en la practica\ncon problemas de dimensiones grandes se producen tantas bifurcaciones\n[ilegible: fragmento cubierto] lo lleva a tardar cantidades inmensas de tiempo que se\nconsideran intratables.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "ba1c6f364f6041bc8e532cf49a6243a7",
+      "dudas": [
+        {
+          "fragmento": "Fragmento cubierto",
+          "nota": "Hay material claro antes de «lo lleva»; no se completa."
+        },
+        {
+          "fragmento": "Tildes",
+          "nota": "No se distinguen tildes en «polinomico» ni «practica»; revisar sin normalizar."
+        },
+        {
+          "fragmento": "Contenido",
+          "nota": "No se incorpora el «solo» rojo ni la corrección roja de complejidad temporal; se conserva el razonamiento del estudiante."
+        }
+      ]
+    },
+    {
+      "region_id": "8a0aaa25afd04f69ae4bb93b041f4379",
+      "examen_id": "EX_0002",
+      "pagina_original": 8,
+      "pagina_en_examen": 4,
+      "tipo": "subpregunta",
+      "pregunta_id": "P5",
+      "inciso_id": "e",
+      "orden": 1,
+      "bbox_px": [
+        38,
+        341,
+        1243,
+        486
+      ],
+      "recorte": "recortes/estudiantes/8a0aaa25afd04f69ae4bb93b041f4379.png",
+      "imagen_local": "imagenes/8a0aaa25afd04f69ae4bb93b041f4379.png",
+      "transcripcion": "e- {a, b, 0, 1, [dudoso: b̅]} = Γ representa el alfabeto de cinta.\n{S, Q} = A representa el conjunto de estados de aceptación.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "ba1c6f364f6041bc8e532cf49a6243a7",
+      "dudas": [
+        {
+          "fragmento": "b̅",
+          "nota": "Último elemento del primer conjunto: símbolo de blanco tentativo."
+        },
+        {
+          "fragmento": "Γ",
+          "nota": "Letra griega tentativa, muy próxima al inicio de «representa»."
+        },
+        {
+          "fragmento": "S, Q",
+          "nota": "Primera letra del segundo conjunto se lee S; revisar sin sustituir por un símbolo teórico."
+        }
+      ]
+    },
+    {
+      "region_id": "4b7f9e4d2fd1474980dd5065a7fa4dca",
+      "examen_id": "EX_0004",
+      "pagina_original": 19,
+      "pagina_en_examen": 3,
+      "tipo": "subpregunta",
+      "pregunta_id": "P1",
+      "inciso_id": "b",
+      "orden": 1,
+      "bbox_px": [
+        180,
+        462,
+        1353,
+        542
+      ],
+      "recorte": "recortes/estudiantes/4b7f9e4d2fd1474980dd5065a7fa4dca.png",
+      "imagen_local": "imagenes/4b7f9e4d2fd1474980dd5065a7fa4dca.png",
+      "transcripcion": "b) La función debe ser: f(q₃, aba, AAA) = {(q₇, λ)}",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "ba1c6f364f6041bc8e532cf49a6243a7",
+      "dudas": [
+        {
+          "fragmento": "q₃ y q₇",
+          "nota": "Índices de estados tentativos; revisar el primero, cuyo trazo es tenue."
+        },
+        {
+          "fragmento": "aba, AAA",
+          "nota": "Se conservan los argumentos rodeados por correcciones rojas; confirmar cantidad de A y cada carácter de aba."
+        },
+        {
+          "fragmento": "{(q₇, λ)}",
+          "nota": "Se linealizan los delimitadores de la salida; el borde derecho dificulta distinguir cierre de paréntesis y llave. Revisar λ y cierres, sin corregir la fórmula."
+        }
+      ]
+    },
+    {
+      "region_id": "4ef1da6a9bee4dcf9faeb9ba832f31ac",
+      "examen_id": "EX_0002",
+      "pagina_original": 8,
+      "pagina_en_examen": 4,
+      "tipo": "subpregunta",
+      "pregunta_id": "P6",
+      "inciso_id": "c",
+      "orden": 1,
+      "bbox_px": [
+        27,
+        1119,
+        1370,
+        1285
+      ],
+      "recorte": "recortes/estudiantes/4ef1da6a9bee4dcf9faeb9ba832f31ac.png",
+      "imagen_local": "imagenes/4ef1da6a9bee4dcf9faeb9ba832f31ac.png",
+      "transcripcion": "c- Atributo: conjunto de propiedades que se le adjudican a los\nsimbolos terminales y no terminales.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "ba1c6f364f6041bc8e532cf49a6243a7",
+      "dudas": [
+        {
+          "fragmento": "adjudican",
+          "nota": "Palabra gris tachada en rojo; lectura tentativa «adjudican». La corrección roja «asignan» queda excluida."
+        },
+        {
+          "fragmento": "simbolos",
+          "nota": "No se distingue tilde en el recorte; revisar."
+        }
+      ]
+    },
+    {
+      "region_id": "0defa2f26e894329aac46c4777a08acb",
+      "examen_id": "EX_0005",
+      "pagina_original": 26,
+      "pagina_en_examen": 4,
+      "tipo": "subpregunta",
+      "pregunta_id": "P5",
+      "inciso_id": "a",
+      "orden": 1,
+      "bbox_px": [
+        138,
+        1407,
+        1563,
+        1921
+      ],
+      "recorte": "recortes/estudiantes/0defa2f26e894329aac46c4777a08acb.png",
+      "imagen_local": "imagenes/0defa2f26e894329aac46c4777a08acb.png",
+      "transcripcion": "MT = ({a, b}, {a, b, 0, 1, [dudoso: b̅]}, {P, Q, R, S, T}, P, {S, Q}, F, [dudoso: b̅])\nα = [dudoso: b̅]abaaca[dudoso: b̅]    cant movimientos = 35\n↓\nβ = [dudoso: b̅]aaacba[dudoso: b̅] → [dudoso: ⑥]\n\na) Si, ya que como se explica que la MT NO USO celdas extras\npara realizar el procedimiento, [dudoso: entonces] un ALA puede realizar el\nmismo procedimiento, porque la unica diferencia entre un ALA y una\nMT es que el ALA tiene acotada su cinta.",
+      "estado": "pendiente_revision_humana",
+      "validado_por_humano": false,
+      "exportacion_id": "ba1c6f364f6041bc8e532cf49a6243a7",
+      "dudas": [
+        {
+          "fragmento": "Encabezado",
+          "nota": "Número de pregunta parcialmente cortado en el margen izquierdo, no se reconstruye."
+        },
+        {
+          "fragmento": "Tupla y cadenas",
+          "nota": "Símbolo de blanco, etiquetas α/β, letras del conjunto y cadenas negras son lecturas tentativas. No se infiere el resultado por contexto."
+        },
+        {
+          "fragmento": "⑥",
+          "nota": "Símbolo azul encerrado en círculos parece 6; lectura dudosa."
+        },
+        {
+          "fragmento": "entonces",
+          "nota": "Palabra sobrescrita: lectura tentativa."
+        },
+        {
+          "fragmento": "Solapamiento",
+          "nota": "Reproduce encabezado y apartado a) de f462da6dcdcc482195f35c18666b91ef, no es una respuesta independiente."
+        }
+      ],
+      "solapamiento": {
+        "region_contenedora": "f462da6dcdcc482195f35c18666b91ef",
+        "grupo_contenido": "f462da6dcdcc482195f35c18666b91ef",
+        "muestra_independiente": false
+      }
     }
   ],
   "exportaciones_id": [
     "dfcf8cc76d514d518254c2e5fea31882",
-    "512aca5b76394e1aacfe5e8c61d88439"
+    "512aca5b76394e1aacfe5e8c61d88439",
+    "ba1c6f364f6041bc8e532cf49a6243a7"
   ]
 }
